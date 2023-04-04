@@ -6,12 +6,19 @@
 
   <groupId>io.github.umutayb</groupId>
   <artifactId>gpt-utilities</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <packaging>jar</packaging>
 
   <name>GPT Utilities</name>
   <description>GPT Utilities is a library that enables seamless integration with ChatGPT</description>
   <url>https://github.com/Umutayb/GPT-Utilities</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
 
   <developers>
     <!-- Umut -->
@@ -32,7 +39,7 @@
   </developers>
 
   <properties>
-    <java.version>19</java.version>
+    <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.version>3.8.0</maven.compiler.version>
     <java.utilities.version>1.3.3</java.utilities.version>
@@ -75,10 +82,24 @@
 
   </dependencies>
 
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
+  <scm>
+    <connection>scm:git:git://github.com/Umutayb/GPT-Utilities.git</connection>
+    <developerConnection>scm:git:ssh://github.com/Umutayb/GPT-Utilities.git</developerConnection>
+    <url>https://github.com/Umutayb/GPT-Utilities</url>
+  </scm>
+
   <build>
-
-    <directory>${buildDirectory}</directory>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -89,23 +110,6 @@
           <source>${java.version}</source>
           <target>${java.version}</target>
         </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>properties-maven-plugin</artifactId>
-        <version>1.0.0</version>
-        <executions>
-          <execution>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>write-project-properties</goal>
-            </goals>
-            <configuration>
-              <outputFile>${project.build.outputDirectory}/properties-from-pom.properties</outputFile>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
