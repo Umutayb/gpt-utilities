@@ -1,6 +1,6 @@
 # Gpt-Utilities
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.umutayb/Gpt-Utilities?color=brightgreen&label=Gpt-Utilities)](https://mvnrepository.com/artifact/io.github.umutayb/Gpt-Utilities/latest)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.umutayb/gpt-utilities?color=brightgreen&label=gpt-utilities)](https://mvnrepository.com/artifact/io.github.umutayb/gpt-utilities/latest)
 
 This library provides seamless integration with ChatGPT API in Java.
 
