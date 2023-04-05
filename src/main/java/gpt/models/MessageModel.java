@@ -19,7 +19,6 @@ public class MessageModel {
      *
      * @param message specifies the initial text of the prompt.
      */
-
     public MessageModel(String engine, List<Message> message) {
         this.messages = message;
         this.model = engine;
