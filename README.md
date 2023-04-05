@@ -64,7 +64,7 @@ public class GptSteps {
 ### Chat
 
 To chat, instantiate **GPT** class and pass the token information in the constructor. 
-Instantiate **Chat** class, pass in the gpt and call **.sendMessages()** method and pass in your condition prompts and start chatting in your CLI!
+Instantiate **Chat** class, pass in the gpt and call **startChat()** method and start chatting in your CLI!
 
 ````java
 import gpt.api.GPT;
