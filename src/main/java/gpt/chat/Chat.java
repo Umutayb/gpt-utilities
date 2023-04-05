@@ -42,7 +42,8 @@ public class Chat {
         Scanner scanner = new Scanner(System.in);
         boolean retainChat = true;
         do {
-            gpt.log.new Info("Please type your message and press ENTER");
+            if (conversationCounter == 0) gpt.log.new Info("Please type your message and press ENTER");
+            else  gpt.log.new Info("Your answer: ");
             String prompt = scanner.nextLine();
             if (prompt.equalsIgnoreCase("end")) retainChat = false;
             else messages.add(new Message("user", prompt));
