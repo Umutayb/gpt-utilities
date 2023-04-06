@@ -12,22 +12,25 @@ This library provides seamless integration with ChatGPT API in Java.
 
 ### Installation
 
-To use Gpt-Utilities in your Maven project, add the following dependency to your pom.xml file:
+To use Gpt-Utilities in your Maven project, add the following dependencies to your pom.xml file:
 ```xml
-<dependency>
-    <groupId>com.github.umutayb</groupId>
-    <artifactId>gpt-utilities</artifactId>
-    <version>0.0.x</version>
-</dependency>
+<dependencies>
+    <!-- GPT Utilities -->
+    <dependency>
+        <groupId>io.github.umutayb</groupId>
+        <artifactId>gpt-utilities</artifactId>
+        <version>0.0.x</version>
+    </dependency>
+
+    <!-- Java Utilities -->
+    <dependency>
+        <groupId>io.github.umutayb</groupId>
+        <artifactId>Utilities</artifactId>
+        <version>1.3.4</version>
+    </dependency>
+</dependencies>
 ```
 
-To use Gpt-Utilities in your Gradle project, add the following dependency to your build.gradle file:
-```
-dependencies {
-    implementation 'com.github.umutayb:gpt-utilities:0.0.x'
-}
-
-```
 After updating your project, you are ready to chat!
 ___
 ### Usage
