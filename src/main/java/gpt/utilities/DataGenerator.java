@@ -85,18 +85,14 @@ public class DataGenerator {
         for (Field field:fields) {
             boolean isMember = field.getType().isMemberClass();
             boolean isList = isOfType(field, "List");
+            
             if (!isList && !isMember)
                 json.addProperty(field.getName(), field.getType().getName());
             else if (!isList)
                 json.add(field.getName(), getJsonObject(clazz.getField(field.getName()).getType(), new JsonObject()));
-            else if (isMemberList(clazz, field))
-                json.add(field.getName(), getJsonArray(field));
-            if (isList && isPrimitive(field)){
-                JsonArray array = new JsonArray();
-                List<String> list = List.of(getTypeName(field));
-                for (String jsonObject : list) array.add(jsonObject);
-                json.add(field.getName(), array);
-            }
+            else
+                json.add(field.getName(), getJsonArray(field, isPrimitive(field)));
+
         }
         return json;
     }
@@ -105,16 +101,22 @@ public class DataGenerator {
         return field.getType().getTypeName().contains(expectedType);
     }
 
-    private JsonArray getJsonArray(Field field) throws ClassNotFoundException, NoSuchFieldException, GptUtilityException {
+    private JsonArray getJsonArray(Field field, boolean primitive) throws ClassNotFoundException, NoSuchFieldException, GptUtilityException {
         JsonArray array = new JsonArray();
-        List<JsonObject> list = List.of(
-                getJsonObject(Class.forName(
-                                ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].getTypeName()
-                        ),
-                        new JsonObject()
-                )
-        );
-        for (JsonObject jsonObject : list) array.add(jsonObject);
+        if (!primitive){
+            List<JsonObject> list = List.of(
+                    getJsonObject(Class.forName(
+                                    ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].getTypeName()
+                            ),
+                            new JsonObject()
+                    )
+            );
+            for (JsonObject jsonObject : list) array.add(jsonObject);
+        }
+        else {
+            List<String> list = List.of(getTypeName(field));
+            for (String jsonObject : list) array.add(jsonObject);
+        }
         return array;
     }
 
