@@ -4,7 +4,6 @@ import api_assured.Caller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import gpt.api.GPT;
 import gpt.exceptions.GptUtilityException;
@@ -12,23 +11,23 @@ import gpt.models.Message;
 import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
 import lombok.Data;
-import java.lang.reflect.*;
+import utils.ReflectionUtilities;
+
 import java.util.*;
 
 @Data
 public class DataGenerator {
 
     private ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
-
+    private ReflectionUtilities reflectionUtilities = new ReflectionUtilities();
     private ObjectMapper objectMapper = new ObjectMapper();
-
     private List<Message> messages = new ArrayList<>();
     private MessageModel messageModel;
     private List<String> prompts;
-    private Double temperature;
     private boolean printResult;
-    static boolean keepLogs;
+    private Double temperature;
     private String modelName;
+    static boolean keepLogs;
     private GPT gpt;
 
     public DataGenerator(GPT gpt) {
@@ -55,6 +54,12 @@ public class DataGenerator {
         this.messages = messages;
     }
 
+    /**
+     * Instantiates a given class with generated values
+     * @param clazz target class
+     * @return generated instance
+     * @param <T> target class type
+     */
     public <T> T instantiate(Class<T> clazz) {
         try {
             String jsonString = generateFieldData(clazz);
@@ -73,9 +78,19 @@ public class DataGenerator {
         }
     }
 
+    /**
+     * Generates fields of a given class
+     * @param clazz target class
+     * @return 
+     * @param <T>
+     * @throws NoSuchFieldException
+     * @throws JsonProcessingException
+     * @throws ClassNotFoundException
+     * @throws GptUtilityException
+     */
     private <T> String generateFieldData(Class<T> clazz) throws NoSuchFieldException, JsonProcessingException, ClassNotFoundException, GptUtilityException {
         gpt.log.new Info("Generating data for the " + clazz.getSimpleName() + " class...");
-        JsonObject json = getJsonObject(clazz, new JsonObject());
+        JsonObject json = reflectionUtilities.getJsonObject(clazz, new JsonObject());
         this.messages.add(new Message("user", "JSON: " + json));
         MessageResponse messageResponse = gpt.sendMessage(
                 new MessageModel(this.modelName, this.messages, this.temperature)
@@ -85,76 +100,8 @@ public class DataGenerator {
         return response;
     }
 
-    private <T> JsonObject getJsonObject(Class<T> clazz, JsonObject json) throws NoSuchFieldException, ClassNotFoundException, GptUtilityException {
-        List<Field> fields = List.of(clazz.getFields());
-        if (fields.size() == 0) throw new GptUtilityException("Please make sure fields of " + clazz.getSimpleName() + " class are set to public.");
-        for (Field field:fields) {
-            boolean isMember = field.getType().isMemberClass();
-            boolean isList = isOfType(field, "List");
-
-            if (!isList && !isMember)
-                json.addProperty(field.getName(), field.getType().getName());
-            else if (!isList)
-                json.add(field.getName(), getJsonObject(clazz.getField(field.getName()).getType(), new JsonObject()));
-            else
-                json.add(field.getName(), getJsonArray(field, isPrimitive(field)));
-
-        }
-        return json;
-    }
-
-    private boolean isOfType(Field field, String expectedType){
-        return field.getType().getTypeName().contains(expectedType);
-    }
-
-    private JsonArray getJsonArray(Field field, boolean primitive) throws ClassNotFoundException, NoSuchFieldException, GptUtilityException {
-        JsonArray array = new JsonArray();
-        if (!primitive){
-            List<JsonObject> list = List.of(
-                    getJsonObject(Class.forName(
-                                    ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].getTypeName()
-                            ),
-                            new JsonObject()
-                    )
-            );
-            for (JsonObject jsonObject : list) array.add(jsonObject);
-        }
-        else {
-            List<String> list = List.of(getTypeName(field));
-            for (String jsonObject : list) array.add(jsonObject);
-        }
-        return array;
-    }
-
-    private <T> boolean isMemberList(Class<T> clazz, Field field){
-        List<Field> fields = List.of(clazz.getFields());
-        return fields.stream().anyMatch(
-                subField -> subField.getGenericType().getTypeName().equals(field.getGenericType().getTypeName())
-        );
-    }
-
-    private boolean isPrimitive(Field field){
-        return switch (getTypeName(field)) {
-            case "java.lang.Integer",
-                    "java.lang.Boolean",
-                    "java.lang.Char",
-                    "java.lang.Double",
-                    "java.lang.Long",
-                    "java.lang.Short",
-                    "java.lang.Byte",
-                    "java.lang.String"
-                    -> true;
-            default -> false;
-        };
-    }
-
-    private String getTypeName(Field field) {
-        ParameterizedType type = (ParameterizedType) field.getGenericType();
-        return type.getActualTypeArguments()[0].getTypeName();
-    }
-
     public void keepsLogs(boolean keepLogs) {
         Caller.keepLogs(keepLogs);
     }
-}
 
+}

@@ -6,9 +6,10 @@ This library provides seamless integration with ChatGPT API in Java.
 
 ## Features
 
-- Send messages to ChatGPT and get responses.
-- Easy to integrate with any Java application.
-- Supports customized ChatGPT configurations.
+- Send messages to GPT and get responses.
+- Easily integrate with any Java application.
+- Select a topic and let two instances of GPT talk about it!
+- **Complete automation of test data generation!** DataGenerator utility instantiates a given class with generated values and returns the instance.
 
 ### Installation
 
@@ -26,7 +27,7 @@ To use Gpt-Utilities in your Maven project, add the following dependencies to yo
     <dependency>
         <groupId>io.github.umutayb</groupId>
         <artifactId>Utilities</artifactId>
-        <version>1.3.4</version>
+        <version>1.3.6</version>
     </dependency>
 </dependencies>
 ```
@@ -95,3 +96,4 @@ public class GptSteps {
     }
 }
  ````
+
