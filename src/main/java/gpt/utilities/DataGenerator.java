@@ -92,20 +92,9 @@ public class DataGenerator {
             boolean isMember = field.getType().isMemberClass();
             boolean isList = isOfType(field, "List");
             if (!isList && !isMember) json.addProperty(field.getName(), field.getType().getName());
-            else if (!isList && isMember)
+            else if (!isList)
                 json.add(field.getName(), getJsonObject(clazz.getField(field.getName()).getType(), new JsonObject()));
-            else if (isList && isMemberList(clazz, field)) {JsonArray array = new JsonArray();
-                List<JsonObject> list = List.of(
-                        getJsonObject(Class.forName(
-                                        ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].getTypeName()
-                                ),
-                                new JsonObject()
-                        )
-                );
-                for (JsonObject jsonObject : list) array.add(jsonObject);
-                json.add(field.getName(), array);
-
-            }
+            else if (isMemberList(clazz, field)) json.add(field.getName(), getJsonArray(field));
             if (isList && isPrimitive(field)){
                 JsonArray array = new JsonArray();
                 List<String> list = List.of(
@@ -114,8 +103,6 @@ public class DataGenerator {
                 for (String jsonObject : list) array.add(jsonObject);
                 json.add(field.getName(), array);
             }
-
-
         }
         return json;
     }
@@ -127,6 +114,19 @@ public class DataGenerator {
 
     private boolean isOfType(Field field, String expectedType){
         return field.getType().getTypeName().contains(expectedType);
+    }
+
+    private JsonArray getJsonArray(Field field) throws ClassNotFoundException, NoSuchFieldException {
+        JsonArray array = new JsonArray();
+        List<JsonObject> list = List.of(
+                getJsonObject(Class.forName(
+                                ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].getTypeName()
+                        ),
+                        new JsonObject()
+                )
+        );
+        for (JsonObject jsonObject : list) array.add(jsonObject);
+        return array;
     }
 
     private Pair<Class<?>, List<?>> getListTypeName(Field field) throws ClassNotFoundException {
