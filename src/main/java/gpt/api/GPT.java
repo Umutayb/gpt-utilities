@@ -24,7 +24,7 @@ public class GPT extends ApiUtilities {
     public GPT(String token) {
         gptServices = new ServiceGenerator(
                 new Headers.Builder().add("Authorization","Bearer " + token).build()
-        ).setConnectionTimeout(240).setWriteTimeout(120).setReadTimeout(120).generate(GptServices.class);
+        ).setConnectionTimeout(240).setWriteTimeout(120).setReadTimeout(120).setPrintHeaders(false).generate(GptServices.class);
         Caller.keepLogs(false);
         this.token = token;
     }

@@ -12,10 +12,10 @@ import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
 import lombok.Data;
 import utils.ReflectionUtilities;
-
 import java.util.*;
 
 @Data
+@SuppressWarnings("unused")
 public class DataGenerator {
 
     private ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -30,6 +30,11 @@ public class DataGenerator {
     static boolean keepLogs;
     private GPT gpt;
 
+    /**
+     * Class representing a data generator that uses GPT to generate data with default parameters.
+     *
+     * @param gpt The GPT instance to use for data generation.
+     */
     public DataGenerator(GPT gpt) {
         this.gpt = gpt;
         modelName = "gpt-3.5-turbo";
@@ -45,7 +50,15 @@ public class DataGenerator {
         ));
     }
 
-
+    /**
+     * Class representing a data generator that uses GPT to generate data based on given parameters.
+     *
+     * @param gpt The GPT instance to use for data generation.
+     * @param modelName The name of the GPT model to use for data generation.
+     * @param temperature The temperature to use for data generation.
+     * @param printResult Whether to print the generated data to the console.
+     * @param messages The list of messages to use for data generation.
+     */
     public DataGenerator(GPT gpt, String modelName, double temperature, boolean printResult, List<Message> messages) {
         this.gpt = gpt;
         this.modelName = modelName;
@@ -82,7 +95,6 @@ public class DataGenerator {
 
     /**
      * Generates fields of a given class.
-     *
      * This function takes a class as input and generates the fields of that class. The fields
      * are returned as an array of strings. Each string represents a field in the format "accessModifier
      * dataType fieldName". The access modifier can be "public", "private", or "protected". The data type
@@ -117,5 +129,4 @@ public class DataGenerator {
     public void keepsLogs(boolean keepLogs) {
         Caller.keepLogs(keepLogs);
     }
-
 }
