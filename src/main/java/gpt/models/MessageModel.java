@@ -24,5 +24,4 @@ public class MessageModel {
         this.model = engine;
         this.temperature = 0.7;
     }
-
 }
