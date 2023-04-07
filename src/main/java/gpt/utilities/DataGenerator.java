@@ -55,14 +55,16 @@ public class DataGenerator {
     }
 
     /**
-     * Instantiates a given class with generated values
-     * @param clazz target class
-     * @return generated instance
-     * @param <T> target class type
+     * Instantiates an object of the given class and returns it.
+     *
+     * @param clazz           the class of the object to be instantiated
+     * @param fieldExceptions an optional array of field names to be excluded from instantiation
+     * @param <T>             the type of the object to be instantiated
+     * @return an instance of the given class
      */
-    public <T> T instantiate(Class<T> clazz) {
+    public <T> T instantiate(Class<T> clazz, String... fieldExceptions) {
         try {
-            String jsonString = generateFieldData(clazz);
+            String jsonString = generateFieldData(clazz, fieldExceptions);
             gpt.log.new Info("Instantiating " + clazz.getSimpleName() + " object with generated data...");
             T instance = objectMapper.readValue(jsonString, clazz);
             String outputJson = objectWriter.writeValueAsString(instance);
@@ -79,18 +81,25 @@ public class DataGenerator {
     }
 
     /**
-     * Generates fields of a given class
-     * @param clazz target class
-     * @return 
-     * @param <T>
-     * @throws NoSuchFieldException
-     * @throws JsonProcessingException
-     * @throws ClassNotFoundException
-     * @throws GptUtilityException
+     * Generates fields of a given class.
+     *
+     * This function takes a class as input and generates the fields of that class. The fields
+     * are returned as an array of strings. Each string represents a field in the format "accessModifier
+     * dataType fieldName". The access modifier can be "public", "private", or "protected". The data type
+     * can be any valid data type in the language. The field name is the name of the field as defined in
+     * the class.
+     *
+     * @param <T> The type of the class for which to generate fields.
+     * @param clazz The class for which to generate fields.
+     * @throws NoSuchFieldException if the class does not have any fields.
+     * @throws JsonProcessingException if there is an error processing the class.
+     * @throws ClassNotFoundException if the class cannot be found.
+     * @return An array of strings representing the fields of the class in the format "accessModifier
+     * dataType fieldName".
      */
-    private <T> String generateFieldData(Class<T> clazz) throws NoSuchFieldException, JsonProcessingException, ClassNotFoundException, GptUtilityException {
+    private <T> String generateFieldData(Class<T> clazz, String... exceptions) throws NoSuchFieldException, JsonProcessingException, ClassNotFoundException, GptUtilityException {
         gpt.log.new Info("Generating data for the " + clazz.getSimpleName() + " class...");
-        JsonObject json = reflectionUtilities.getJsonObject(clazz, new JsonObject());
+        JsonObject json = reflectionUtilities.getJsonObject(clazz, new JsonObject(), exceptions);
         this.messages.add(new Message("user", "JSON: " + json));
         MessageResponse messageResponse = gpt.sendMessage(
                 new MessageModel(this.modelName, this.messages, this.temperature)
@@ -100,6 +109,11 @@ public class DataGenerator {
         return response;
     }
 
+    /**
+     * Sets whether to keep logs.
+     *
+     * @param keepLogs true if logs should be kept, false otherwise
+     */
     public void keepsLogs(boolean keepLogs) {
         Caller.keepLogs(keepLogs);
     }
