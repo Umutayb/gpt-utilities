@@ -1,5 +1,6 @@
 package gpt.chat;
 
+import api_assured.Caller;
 import gpt.api.GPT;
 import gpt.models.Message;
 import gpt.models.MessageModel;
@@ -29,6 +30,7 @@ public class Chat {
         this.modelName = "gpt-3.5-turbo";
         this.temperature = 0.5;
 
+        Caller.keepLogs(true);
         for (String prompt:prompts) messages.add(new Message("user", prompt));
     }
 
@@ -65,6 +67,7 @@ public class Chat {
     }
 
     public void evaluateTopic(String topic){
+        gpt.log.new Info("Evaluating " + topic + " topic...");
         List<Message> messages = new ArrayList<>();
         List<Message> responses = new ArrayList<>();
         String modelName = "gpt-3.5-turbo";
@@ -72,9 +75,7 @@ public class Chat {
 
         String initialPrompt = "Lets talk about " + topic;
 
-        PropertyUtility.loadProperties("src/test/resources/test.properties");
-        GPT gpt = new GPT(PropertyUtility.properties.getProperty("gpt-token"));
-        GPT gpt2 = new GPT(PropertyUtility.properties.getProperty("gpt-token"));
+        GPT responder = new GPT(gpt.getToken());
 
         messages.add(new Message("user", initialPrompt));
 
@@ -84,13 +85,13 @@ public class Chat {
             messages.add(new Message("assistant", prompt));
             responses.add(new Message("user", prompt));
 
-            gpt.log.new Important("GPT1: " + prompt);
+            gpt.log.new Info("Initiator: " + prompt);
 
-            String response = gpt2.sendMessage(new MessageModel(modelName, responses, temperature)).getChoices().get(0).getMessage().getContent();
+            String response = responder.sendMessage(new MessageModel(modelName, responses, temperature)).getChoices().get(0).getMessage().getContent();
             messages.add(new Message("user", response));
             responses.add(new Message("assistant", response));
 
-            gpt2.log.new Important("GPT2: " + response);
+            responder.log.new Info("Responder: " + response);
 
             if (response.contains("bye") || prompt.contains("bye") || response.contains("Have a great day") || prompt.contains("Have a great day") ) break;
         }

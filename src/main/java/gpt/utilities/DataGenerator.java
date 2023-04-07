@@ -1,5 +1,6 @@
 package gpt.utilities;
 
+import api_assured.Caller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -26,14 +27,16 @@ public class DataGenerator {
     private List<String> prompts;
     private Double temperature;
     private boolean printResult;
+    static boolean keepLogs;
     private String modelName;
     private GPT gpt;
 
     public DataGenerator(GPT gpt) {
         this.gpt = gpt;
-        this.modelName = "gpt-3.5-turbo";
+        modelName = "gpt-3.5-turbo";
         this.temperature = 0.8;
         this.printResult = true;
+        Caller.keepLogs(false);
 
         messages.add(new Message("user",
                 "Please recreate the following json with randomised, creative and unique values that are meaningful with respect to the field names. "  +
@@ -52,13 +55,15 @@ public class DataGenerator {
         this.messages = messages;
     }
 
-    public <T> T instantiate(Class<T> type) {
+    public <T> T instantiate(Class<T> clazz) {
         try {
-            T instance = generateInstanceOf(type);
-            String json = objectWriter.writeValueAsString(instance);
+            String jsonString = generateFieldData(clazz);
+            gpt.log.new Info("Instantiating " + clazz.getSimpleName() + " object with generated data...");
+            T instance = objectMapper.readValue(jsonString, clazz);
+            String outputJson = objectWriter.writeValueAsString(instance);
             if (printResult)
                 gpt.log.new Info(
-                        "An instance of " + type.getSimpleName() + " object has been created as: \n" + json
+                        "An instance of " + clazz.getSimpleName() + " object has been instantiated as: \n" + outputJson
                 );
             return instance;
         }
@@ -68,24 +73,25 @@ public class DataGenerator {
         }
     }
 
-    private <T> T generateInstanceOf(Class<T> type) throws NoSuchFieldException, JsonProcessingException, ClassNotFoundException, GptUtilityException {
-        JsonObject json = getJsonObject(type, new JsonObject());
+    private <T> String generateFieldData(Class<T> clazz) throws NoSuchFieldException, JsonProcessingException, ClassNotFoundException, GptUtilityException {
+        gpt.log.new Info("Generating data for the " + clazz.getSimpleName() + " class...");
+        JsonObject json = getJsonObject(clazz, new JsonObject());
         this.messages.add(new Message("user", "JSON: " + json));
         MessageResponse messageResponse = gpt.sendMessage(
                 new MessageModel(this.modelName, this.messages, this.temperature)
         );
         String response = messageResponse.getChoices().get(0).getMessage().getContent();
         if (response.startsWith("JSON:")) response = response.replace("JSON:", "").trim();
-        return objectMapper.readValue(response, type);
+        return response;
     }
 
     private <T> JsonObject getJsonObject(Class<T> clazz, JsonObject json) throws NoSuchFieldException, ClassNotFoundException, GptUtilityException {
-        List<Field> fields = Arrays.stream(clazz.getFields()).toList();
+        List<Field> fields = List.of(clazz.getFields());
         if (fields.size() == 0) throw new GptUtilityException("Please make sure fields of " + clazz.getSimpleName() + " class are set to public.");
         for (Field field:fields) {
             boolean isMember = field.getType().isMemberClass();
             boolean isList = isOfType(field, "List");
-            
+
             if (!isList && !isMember)
                 json.addProperty(field.getName(), field.getType().getName());
             else if (!isList)
@@ -145,6 +151,10 @@ public class DataGenerator {
     private String getTypeName(Field field) {
         ParameterizedType type = (ParameterizedType) field.getGenericType();
         return type.getActualTypeArguments()[0].getTypeName();
+    }
+
+    public void keepsLogs(boolean keepLogs) {
+        Caller.keepLogs(keepLogs);
     }
 }
 
