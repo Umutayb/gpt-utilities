@@ -102,7 +102,7 @@ public class GptSteps {
 ### Data Generation
 
 To use data generation, instantiate **GPT** class and pass the token information in the constructor.
-Then create a DataGenerator instance, pass your gpt into the constructor, and you are ready! call **instantiate()**
+Then create a DataGenerator instance, pass your gpt into the constructor, and you are ready! Call **instantiate()**
 method and pass in the class you would like to have instantiated. **instantiate()** will return an instance of the object with
 all its fields will having meaningful values!
 
