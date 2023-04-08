@@ -1,9 +1,12 @@
 package gpt.utilities;
 
 import api_assured.Caller;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.JsonObject;
 import gpt.api.GPT;
 import gpt.exceptions.GptUtilityException;
@@ -18,9 +21,9 @@ import java.util.*;
 @SuppressWarnings("unused")
 public class DataGenerator {
 
-    private ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
     private ReflectionUtilities reflectionUtilities = new ReflectionUtilities();
     private ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectWriter objectWriter;
     private List<Message> messages = new ArrayList<>();
     private MessageModel messageModel;
     private List<String> prompts;
@@ -41,6 +44,8 @@ public class DataGenerator {
         this.temperature = 0.8;
         this.printResult = true;
         Caller.keepLogs(false);
+
+        prepareObjectMapper();
 
         messages.add(new Message("user",
                 "Please recreate the following json with randomised, creative and unique values that are meaningful with respect to the field names. "  +
@@ -65,6 +70,8 @@ public class DataGenerator {
         this.temperature = temperature;
         this.printResult = printResult;
         this.messages = messages;
+
+        prepareObjectMapper();
     }
 
     /**
@@ -128,5 +135,14 @@ public class DataGenerator {
      */
     public void keepsLogs(boolean keepLogs) {
         Caller.keepLogs(keepLogs);
+    }
+
+    private void prepareObjectMapper() {
+        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        objectMapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
+        objectMapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
+        objectMapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.NONE);
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
     }
 }

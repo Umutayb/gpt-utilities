@@ -68,7 +68,9 @@ public class GptSteps {
 ### Chat
 
 To chat, instantiate **GPT** class and pass the token information in the constructor. 
-Instantiate **Chat** class, pass in the gpt and call **startChat()** method and start chatting in your CLI!
+Instantiate **Chat** class, pass in the gpt and call **startChat()** method and start chatting in your CLI! 
+IF you would like to experiment, try the **evaluateTopic()** method to see two instances of GPT have a conversation 
+about a topic of your choosing.
 
 ````java
 import gpt.api.GPT;
@@ -96,4 +98,32 @@ public class GptSteps {
     }
 }
  ````
+ ___
+### Data Generation
 
+To use data generation, instantiate **GPT** class and pass the token information in the constructor.
+Then create a DataGenerator instance, pass your gpt into the constructor, and you are ready! call **instantiate()**
+method and pass in the class you would like to have instantiated. **instantiate()** will return an instance of the object with
+all its fields will having meaningful values!
+
+````java
+import gpt.api.GPT;
+import gpt.utilities.DataGenerator;
+import utils.PropertyUtility;
+
+public class GptSteps {
+
+    static class Seller {
+        private String name;
+        private String phone;
+        private String email;
+    }
+
+    public static void main(String[] args) {
+        PropertyUtility.loadProperties("src/test/resources/test.properties");
+        GPT gpt = new GPT(PropertyUtility.properties.getProperty("gpt-token"));
+        DataGenerator generator = new DataGenerator(gpt);
+        Seller reservationModel = generator.instantiate(Seller.class);
+    }
+}
+ ````
