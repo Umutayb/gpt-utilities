@@ -123,7 +123,7 @@ public class GptSteps {
         PropertyUtility.loadProperties("src/test/resources/test.properties");
         GPT gpt = new GPT(PropertyUtility.properties.getProperty("gpt-token"));
         DataGenerator generator = new DataGenerator(gpt);
-        Seller reservationModel = generator.instantiate(Seller.class);
+        Seller seller = generator.instantiate(Seller.class);
     }
 }
  ````
