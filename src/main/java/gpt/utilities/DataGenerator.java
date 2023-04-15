@@ -15,6 +15,8 @@ import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
 import lombok.Data;
 import utils.ReflectionUtilities;
+import utils.TextParser;
+
 import java.util.*;
 
 @Data
@@ -22,6 +24,7 @@ import java.util.*;
 public class DataGenerator {
 
     private ReflectionUtilities reflectionUtilities = new ReflectionUtilities();
+    private TextParser parser = new TextParser();
     private ObjectMapper objectMapper = new ObjectMapper();
     private ObjectWriter objectWriter;
     private List<Message> messages = new ArrayList<>();
@@ -49,9 +52,10 @@ public class DataGenerator {
 
         messages.add(new Message("user",
                 "Please recreate the following json with randomised, creative and unique values that are meaningful with respect to the field names. "  +
-                "Do not skip any field."  +
+                "Do not skip any field"  +
                 "While generating values, always prioritise given value types over value names"  +
-                "Response should only contain the json itself!"
+                "Respond only with the recreated json" +
+                "Recreated json should have identical field names with the original json"
         ));
     }
 
@@ -124,7 +128,7 @@ public class DataGenerator {
                 new MessageModel(this.modelName, this.messages, this.temperature)
         );
         String response = messageResponse.getChoices().get(0).getMessage().getContent();
-        if (response.startsWith("JSON:")) response = response.replace("JSON:", "").trim();
+        if (!response.startsWith("{")) response = "{" + parser.parse("{", null, response);
         return response;
     }
 
