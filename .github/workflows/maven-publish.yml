@@ -9,6 +9,12 @@ jobs:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
+      - name: Import GPG key
+        run: gpg --import ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+      - name: Set up GPG agent
+        uses: crazy-max/ghaction-gpg@v2
+        with:
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
       - uses: actions/checkout@v2
       - name: Set up Java for publishing to Maven Central Repository
         uses: actions/setup-java@v1
