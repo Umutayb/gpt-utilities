@@ -3,9 +3,12 @@ on:
   push:
     tags:
       - '*'
+      
+permissions:
+  issues: 'write' #__This fixed the HttpError: Resource not accessible by integration
+  
 jobs:
   publish:
-    permissions: read-all
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
