@@ -22,13 +22,6 @@ To use Gpt-Utilities in your Maven project, add the following dependencies to yo
         <artifactId>gpt-utilities</artifactId>
         <version>0.0.x</version>
     </dependency>
-
-    <!-- Java Utilities -->
-    <dependency>
-        <groupId>io.github.umutayb</groupId>
-        <artifactId>Utilities</artifactId>
-        <version>1.4.2</version>
-    </dependency>
 </dependencies>
 ```
 
