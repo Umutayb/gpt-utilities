@@ -16,7 +16,7 @@ jobs:
           server-id: ossrh
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
-          gpg-private-key: ${{ maven.OSSRH_GPG_SECRET_KEY }}
+          gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: build artifact
         run: mvn clean package
@@ -33,6 +33,6 @@ jobs:
             --batch-mode \
             deploy
         env:
-          MAVEN_USERNAME: ${{ maven.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ maven.OSSRH_TOKEN }}
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ maven.OSSRH_GPG_SECRET_KEY_PASSWORD }}
