@@ -1,6 +1,7 @@
 package gpt.chat;
 
 import api_assured.Caller;
+import api_assured.exceptions.FailedCallException;
 import gpt.api.GPT;
 import gpt.models.Message;
 import gpt.models.MessageModel;
@@ -39,12 +40,15 @@ public class Chat {
     }
 
     /**
-     * Starts the chat by creating a new instance of Scanner and passing it to the chat method.
-     * Closes the scanner after the chat is finished.
+     * This method initiates a chat between the user and the GPT model.
+     * It prompts the user to enter a message and sends it to the model for a response.
+     * The conversation continues until the user or the model responds with "bye".
+     * If the conversation reaches the conversation limit (100 messages), it will stop and prompt the user to start a new conversation.
+     *
      */
     public void startChat(){
         Scanner scanner = new Scanner(System.in);
-        chat(scanner);
+        startChat(scanner);
         scanner.close();
     }
 
@@ -56,7 +60,7 @@ public class Chat {
      *
      * @param scanner Scanner object to receive user input
      */
-    private void chat(Scanner scanner){
+    public void startChat(Scanner scanner){
         int conversationCounter = 0;
         int conversationLimit = 100;
         boolean retainChat = true;
@@ -65,14 +69,21 @@ public class Chat {
             else  gpt.log.new Info("Your answer: ");
             StringBuilder prompt = new StringBuilder();
             String input;
-            while (!(input = scanner.nextLine()).isEmpty()) prompt.append(input).append("\n");
+            while (scanner.hasNextLine() && !(input = scanner.nextLine()).isEmpty()) prompt.append(input).append("\n");
             messages.add(new Message("user", prompt.toString()));
             gpt.log.new Info("Waiting for GPT...");
-            MessageResponse messageResponse = gpt.sendMessage(new MessageModel(modelName, messages, temperature));
-            Message message = messageResponse.getChoices().get(0).getMessage();
-            messages.add(new Message(message.getRole(), message.getContent()));
-            gpt.log.new Info(messageResponse.getChoices().get(0).getMessage().getContent());
-            if (messageResponse.getChoices().get(0).getMessage().getContent().contains("bye")) break;
+            try {
+                MessageResponse messageResponse = gpt.sendMessage(new MessageModel(modelName, messages, temperature));
+                Message message = messageResponse.getChoices().get(0).getMessage();
+                messages.add(new Message(message.getRole(), message.getContent()));
+                gpt.log.new Info(messageResponse.getChoices().get(0).getMessage().getContent());
+                if (messageResponse.getChoices().get(0).getMessage().getContent().contains("bye")) break;
+            }
+            catch (FailedCallException failedCall){
+                gpt.log.new Warning("Please make sure you have a valid token!");
+                return;
+            }
+
             conversationCounter++;
             if (conversationCounter >= conversationLimit) {
                 retainChat = false;
