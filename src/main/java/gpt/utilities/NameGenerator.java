@@ -14,14 +14,16 @@ import gpt.models.Message;
 import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
 import lombok.Data;
+import utils.FileUtilities;
 import utils.ReflectionUtilities;
 import utils.TextParser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @SuppressWarnings("unused")
-public class DataGenerator {
+public class NameGenerator {
 
     private ReflectionUtilities reflectionUtilities = new ReflectionUtilities();
     private TextParser parser = new TextParser();
@@ -31,6 +33,8 @@ public class DataGenerator {
     private MessageModel messageModel;
     private List<String> prompts;
     private boolean printResult;
+
+    public FileUtilities.Json fileUtils = new FileUtilities.Json();
     private Double temperature;
     private String modelName;
     static boolean keepLogs;
@@ -41,7 +45,7 @@ public class DataGenerator {
      *
      * @param gpt The GPT instance to use for data generation.
      */
-    public DataGenerator(GPT gpt) {
+    public NameGenerator(GPT gpt) {
         this.gpt = gpt;
         modelName = "gpt-3.5-turbo";
         this.temperature = 0.8;
@@ -51,11 +55,17 @@ public class DataGenerator {
         prepareObjectMapper();
 
         messages.add(new Message("user",
-                "Please recreate the following json with randomised, creative and unique values that are meaningful with respect to the field names. "  +
-                "Do not skip any field"  +
-                "While generating values, always prioritise given value types over value names"  +
-                "Respond only with the recreated json" +
-                "Recreated json should have identical field names with the original json"
+                "Please generate web element names that are respect to the given json and strict to the instructions down below " +
+                        "Inspect the given url and use context to generate unique names " +
+                        "Always prioritize context " +
+                        "Do not include pages 'name' to the 'elementName' " +
+                        "Do not include 'tagName' to the 'elementName' " +
+                        "Don't give the same suffix or prefix for all names " +
+                        "The name element always should be in this format: 'elementName': 'generated name' " +
+                        "The generated name must be always in camel case format " +
+                        "Respond only with the recreated json with selectors and elementName section " +
+                        "If there is not an 'elementName' section, create for the related selectors " +
+                        "Recreated json should have identical attributes and values with the original json "
         ));
     }
 
@@ -68,7 +78,7 @@ public class DataGenerator {
      * @param printResult Whether to print the generated data to the console.
      * @param messages The list of messages to use for data generation.
      */
-    public DataGenerator(GPT gpt, String modelName, double temperature, boolean printResult, List<Message> messages) {
+    public NameGenerator(GPT gpt, String modelName, double temperature, boolean printResult, List<Message> messages) {
         this.gpt = gpt;
         this.modelName = modelName;
         this.temperature = temperature;
@@ -81,22 +91,19 @@ public class DataGenerator {
     /**
      * Instantiates an object of the given class and returns it.
      *
-     * @param clazz           the class of the object to be instantiated
      * @param fieldExceptions an optional array of field names to be excluded from instantiation
      * @param <T>             the type of the object to be instantiated
      * @return an instance of the given class
      */
-    public <T> T instantiate(Class<T> clazz, String... fieldExceptions) {
+    public <T> String generateName(String jsonPath, String url, String... fieldExceptions) {
         try {
-            String jsonString = generateFieldData(clazz, fieldExceptions);
-            gpt.log.new Info("Instantiating " + clazz.getSimpleName() + " object with generated data...");
-            T instance = objectMapper.readValue(jsonString, clazz);
-            String outputJson = objectWriter.writeValueAsString(instance);
+            String jsonString = getJsonData(jsonPath, url, fieldExceptions);
+            gpt.log.new Info("Generating name...");
+            String outputJson = objectWriter.writeValueAsString(jsonString);
             if (printResult)
                 gpt.log.new Info(
-                        "An instance of " + clazz.getSimpleName() + " object has been instantiated as: \n" + outputJson
-                );
-            return instance;
+                        "Generated names for the given elements");
+            return jsonString;
         }
         catch (JsonProcessingException | NoSuchFieldException | ClassNotFoundException | GptUtilityException exception){
             exception.printStackTrace();
@@ -113,26 +120,21 @@ public class DataGenerator {
      * the class.
      *
      * @param <T> The type of the class for which to generate fields.
-     * @param clazz The class for which to generate fields.
      * @throws NoSuchFieldException if the class does not have any fields.
      * @throws JsonProcessingException if there is an error processing the class.
      * @throws ClassNotFoundException if the class cannot be found.
      * @return An array of strings representing the fields of the class in the format "accessModifier
      * dataType fieldName".
      */
-    private <T> String generateFieldData(Class<T> clazz, String... exceptions) throws NoSuchFieldException, JsonProcessingException, ClassNotFoundException, GptUtilityException {
-        gpt.log.new Info("Generating data for the " + clazz.getSimpleName() + " class...");
-        JsonObject json = reflectionUtilities.getJsonObject(clazz, new JsonObject(), exceptions);
-        this.messages.add(new Message("user", "JSON: " + json));
+    private <T> String getJsonData(String path, String url, String... exceptions) throws NoSuchFieldException, JsonProcessingException, ClassNotFoundException, GptUtilityException {
+        gpt.log.new Info("Generating data...");
+        JsonObject json = fileUtils.parseJsonFile(path);
+        this.messages.add(new Message("user", "JSON: " + json + "\n" + "Website: " + url));
         MessageResponse messageResponse = gpt.sendMessage(
                 new MessageModel(this.modelName, this.messages, this.temperature)
         );
-        String response = messageResponse.getChoices().get(0).getMessage().getContent();
-        if (!response.startsWith("{")) response = "{" + parser.parse("{", null, response);
-        return response;
+        return messageResponse.getChoices().get(0).getMessage().getContent();
     }
-
-
 
     /**
      * Sets whether to keep logs.
