@@ -132,8 +132,6 @@ public class DataGenerator {
         return response;
     }
 
-
-
     /**
      * Sets whether to keep logs.
      *
