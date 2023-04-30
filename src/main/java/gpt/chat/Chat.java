@@ -31,6 +31,7 @@ public class Chat {
 
         Caller.keepLogs(true);
         for (String prompt:prompts) messages.add(new Message("user", prompt));
+        this.prompts = new ArrayList<>(); //Flushing prompts after adding them to messages, preventing duplicate prompts
     }
 
     public Chat(GPT gpt){
@@ -65,6 +66,7 @@ public class Chat {
         int conversationLimit = 100;
         boolean retainChat = true;
         do {
+            if (prompts != null && prompts.size() > 0 ) for (String prompt:prompts) messages.add(new Message("user", prompt));
             if (conversationCounter == 0) gpt.log.new Info("Enter your message (press Enter on an empty line to finish):");
             else  gpt.log.new Info("Your answer: ");
             StringBuilder prompt = new StringBuilder();
