@@ -6,11 +6,13 @@ import api_assured.ServiceGenerator;
 import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import okhttp3.Headers;
 import retrofit2.Call;
 import utils.StringUtilities;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class GPT extends ApiUtilities {
 
     GptServices gptServices;
@@ -24,7 +26,13 @@ public class GPT extends ApiUtilities {
     public GPT(String token) {
         gptServices = new ServiceGenerator(
                 new Headers.Builder().add("Authorization","Bearer " + token).build()
-        ).setConnectionTimeout(240).setWriteTimeout(120).setReadTimeout(120).setPrintHeaders(false).generate(GptServices.class);
+        ).setConnectionTimeout(
+                Integer.parseInt(properties.getProperty("connection-timeout", "240"))
+        ).setWriteTimeout(
+                Integer.parseInt(properties.getProperty("connection-write-timeout", "120"))
+        ).setReadTimeout(
+                Integer.parseInt(properties.getProperty("connection-read-timeout", "120"))
+        ).setPrintHeaders(false).generate(GptServices.class);
         Caller.keepLogs(false);
         this.token = token;
     }
