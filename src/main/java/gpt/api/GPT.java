@@ -27,11 +27,11 @@ public class GPT extends ApiUtilities {
         gptServices = new ServiceGenerator(
                 new Headers.Builder().add("Authorization","Bearer " + token).build()
         ).setConnectionTimeout(
-                Integer.parseInt(properties.getProperty("connection-timeout", "240"))
+                Integer.parseInt(properties.getProperty("gpt-connection-timeout", "240"))
         ).setWriteTimeout(
-                Integer.parseInt(properties.getProperty("connection-write-timeout", "120"))
+                Integer.parseInt(properties.getProperty("gpt-connection-write-timeout", "120"))
         ).setReadTimeout(
-                Integer.parseInt(properties.getProperty("connection-read-timeout", "120"))
+                Integer.parseInt(properties.getProperty("gpt-connection-read-timeout", "120"))
         ).setPrintHeaders(false).generate(GptServices.class);
         Caller.keepLogs(false);
         this.token = token;
