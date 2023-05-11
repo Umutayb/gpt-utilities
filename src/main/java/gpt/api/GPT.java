@@ -44,7 +44,7 @@ public class GPT extends ApiUtilities {
      * @return a response model containing response and usage information
      */
     public MessageResponse sendMessage(MessageModel messageModel) {
-        if (Caller.keepsLogs()) log.new Info("Messaging GPT model " + strUtils.highlighted(StringUtilities.Color.BLUE, messageModel.getModel()));
+        if (Caller.keepsLogs()) log.info("Messaging GPT model " + strUtils.highlighted(StringUtilities.Color.BLUE, messageModel.getModel()));
         Call<MessageResponse> messageCall = gptServices.sendMessage(messageModel);
         return perform(messageCall, true , false);
     }

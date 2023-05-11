@@ -14,6 +14,7 @@ import java.util.Scanner;
 
 @Data
 @AllArgsConstructor
+@SuppressWarnings("unused")
 public class Chat {
 
     private List<String> prompts;
@@ -67,29 +68,29 @@ public class Chat {
         boolean retainChat = true;
         do {
             if (prompts != null && prompts.size() > 0 ) for (String prompt:prompts) messages.add(new Message("user", prompt));
-            if (conversationCounter == 0) gpt.log.new Info("Enter your message (press Enter on an empty line to finish):");
-            else  gpt.log.new Info("Your answer: ");
+            if (conversationCounter == 0) gpt.log.info("Enter your message (press Enter on an empty line to finish):");
+            else  gpt.log.info("Your answer: ");
             StringBuilder prompt = new StringBuilder();
             String input;
             while (scanner.hasNextLine() && !(input = scanner.nextLine()).isEmpty()) prompt.append(input).append("\n");
             messages.add(new Message("user", prompt.toString()));
-            gpt.log.new Info("Waiting for GPT...");
+            gpt.log.info("Waiting for GPT...");
             try {
                 MessageResponse messageResponse = gpt.sendMessage(new MessageModel(modelName, messages, temperature));
                 Message message = messageResponse.getChoices().get(0).getMessage();
                 messages.add(new Message(message.getRole(), message.getContent()));
-                gpt.log.new Info(messageResponse.getChoices().get(0).getMessage().getContent());
+                gpt.log.info(messageResponse.getChoices().get(0).getMessage().getContent());
                 if (messageResponse.getChoices().get(0).getMessage().getContent().contains("bye")) break;
             }
             catch (FailedCallException failedCall){
-                gpt.log.new Warning("Please make sure you have a valid token!");
+                gpt.log.warning("Please make sure you have a valid token!");
                 return;
             }
 
             conversationCounter++;
             if (conversationCounter >= conversationLimit) {
                 retainChat = false;
-                gpt.log.new Warning("Reached limited number of messages! Please start a new conversation.");
+                gpt.log.warning("Reached limited number of messages! Please start a new conversation.");
             }
         }
         while (retainChat);
@@ -102,7 +103,7 @@ public class Chat {
      */
     public void evaluateTopic(String topic){
         GPT responder = new GPT(gpt.getToken());
-        gpt.log.new Info("Evaluating " + topic + " topic...");
+        gpt.log.info("Evaluating " + topic + " topic...");
         List<Message> messages = new ArrayList<>();
         List<Message> responses = new ArrayList<>();
         String modelName = "gpt-3.5-turbo";
@@ -113,11 +114,11 @@ public class Chat {
             String prompt = gpt.sendMessage(new MessageModel(modelName, messages, temperature)).getChoices().get(0).getMessage().getContent();
             messages.add(new Message("assistant", prompt));
             responses.add(new Message("user", prompt));
-            gpt.log.new Info("Initiator: " + prompt);
+            gpt.log.info("Initiator: " + prompt);
             String response = responder.sendMessage(new MessageModel(modelName, responses, temperature)).getChoices().get(0).getMessage().getContent();
             messages.add(new Message("user", response));
             responses.add(new Message("assistant", response));
-            responder.log.new Info("Responder: " + response);
+            responder.log.info("Responder: " + response);
             if (response.contains("bye") || prompt.contains("bye") || response.contains("Have a great day") || prompt.contains("Have a great day") ) break;
         }
         while (true);
