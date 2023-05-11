@@ -89,11 +89,11 @@ public class DataGenerator {
     public <T> T instantiate(Class<T> clazz, String... fieldExceptions) {
         try {
             String jsonString = generateFieldData(clazz, fieldExceptions);
-            gpt.log.new Info("Instantiating " + clazz.getSimpleName() + " object with generated data...");
+            gpt.log.info("Instantiating " + clazz.getSimpleName() + " object with generated data...");
             T instance = objectMapper.readValue(jsonString, clazz);
             String outputJson = objectWriter.writeValueAsString(instance);
             if (printResult)
-                gpt.log.new Info(
+                gpt.log.info(
                         "An instance of " + clazz.getSimpleName() + " object has been instantiated as: \n" + outputJson
                 );
             return instance;
@@ -121,7 +121,7 @@ public class DataGenerator {
      * dataType fieldName".
      */
     private <T> String generateFieldData(Class<T> clazz, String... exceptions) throws NoSuchFieldException, JsonProcessingException, ClassNotFoundException, GptUtilityException {
-        gpt.log.new Info("Generating data for the " + clazz.getSimpleName() + " class...");
+        gpt.log.info("Generating data for the " + clazz.getSimpleName() + " class...");
         JsonObject json = reflectionUtilities.getJsonObject(clazz, new JsonObject(), exceptions);
         this.messages.add(new Message("user", "JSON: " + json));
         MessageResponse messageResponse = gpt.sendMessage(
