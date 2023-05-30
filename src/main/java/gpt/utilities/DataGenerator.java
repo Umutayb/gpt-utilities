@@ -24,10 +24,10 @@ import java.util.*;
 public class DataGenerator {
 
     private ReflectionUtilities reflectionUtilities = new ReflectionUtilities();
-    private TextParser parser = new TextParser();
     private ObjectMapper objectMapper = new ObjectMapper();
-    private ObjectWriter objectWriter;
     private List<Message> messages = new ArrayList<>();
+    private TextParser parser = new TextParser();
+    private ObjectWriter objectWriter;
     private MessageModel messageModel;
     private List<String> prompts;
     private boolean printResult;
@@ -87,21 +87,29 @@ public class DataGenerator {
      * @return an instance of the given class
      */
     public <T> T instantiate(Class<T> clazz, String... fieldExceptions) {
-        try {
-            String jsonString = generateFieldData(clazz, fieldExceptions);
-            gpt.log.info("Instantiating " + clazz.getSimpleName() + " object with generated data...");
-            T instance = objectMapper.readValue(jsonString, clazz);
-            String outputJson = objectWriter.writeValueAsString(instance);
-            if (printResult)
-                gpt.log.info(
-                        "An instance of " + clazz.getSimpleName() + " object has been instantiated as: \n" + outputJson
-                );
-            return instance;
+        int attemptCounter = 0;
+        do {
+            try {
+                String jsonString = generateFieldData(clazz, fieldExceptions);
+                gpt.log.info("Instantiating " + clazz.getSimpleName() + " object with generated data...");
+                T instance = objectMapper.readValue(jsonString, clazz);
+                String outputJson = objectWriter.writeValueAsString(instance);
+                if (printResult)
+                    gpt.log.info(
+                            "An instance of " + clazz.getSimpleName() + " object has been instantiated as: \n" + outputJson
+                    );
+                return instance;
+            }
+            catch (JsonProcessingException | NoSuchFieldException | ClassNotFoundException | GptUtilityException exception) {
+                attemptCounter++;
+                if (attemptCounter > 3) {
+                    gpt.log.error("Failed to instantiate " + clazz.getSimpleName() + " class!", exception);
+                    return null;
+            }
+                else gpt.log.warning("Failed to instantiate " + clazz.getSimpleName() + " class. Trying again...");
+            }
         }
-        catch (JsonProcessingException | NoSuchFieldException | ClassNotFoundException | GptUtilityException exception){
-            exception.printStackTrace();
-            return null;
-        }
+        while (true);
     }
 
     /**
@@ -123,7 +131,7 @@ public class DataGenerator {
     private <T> String generateFieldData(Class<T> clazz, String... exceptions) throws NoSuchFieldException, JsonProcessingException, ClassNotFoundException, GptUtilityException {
         gpt.log.info("Generating data for the " + clazz.getSimpleName() + " class...");
         JsonObject json = reflectionUtilities.getJsonObject(clazz, new JsonObject(), exceptions);
-        this.messages.add(new Message("user", "JSON: " + json));
+        this.messages.add(new Message("user", clazz.getSimpleName() + " class JSON: " + json));
         MessageResponse messageResponse = gpt.sendMessage(
                 new MessageModel(this.modelName, this.messages, this.temperature)
         );
