@@ -13,7 +13,7 @@ jobs:
         run: echo off 
           echo '
           token=${{ secrets.OPENAI_TOKEN }}
-          '>${{ secrets.TEST_PROPERTIES }}
+          '>src/test/resources/test.properties
       - uses: actions/checkout@v2
       - name: Set up Java for publishing to Maven Central Repository
         uses: actions/setup-java@v1
