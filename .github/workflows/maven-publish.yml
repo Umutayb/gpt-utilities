@@ -9,6 +9,8 @@ jobs:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Write value to Properties-file
         uses: christian-draeger/write-properties@1.1.0
         with:
