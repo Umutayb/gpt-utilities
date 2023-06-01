@@ -102,7 +102,7 @@ public class DataGenerator {
             }
             catch (JsonProcessingException | NoSuchFieldException | ClassNotFoundException | GptUtilityException exception) {
                 attemptCounter++;
-                if (attemptCounter > 3) {
+                if (attemptCounter > 5) {
                     gpt.log.error("Failed to instantiate " + clazz.getSimpleName() + " class!", exception);
                     return null;
             }
