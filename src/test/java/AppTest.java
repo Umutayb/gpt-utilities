@@ -6,6 +6,7 @@ import models.Pet;
 import models.User;
 import models.Librarian;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import utils.PropertyUtility;
 
@@ -16,10 +17,34 @@ public class AppTest {
     static GPT gpt;
     static DataGenerator generator;
 
-    static {
+    @Before
+    public void loadProperties(){
         PropertyUtility.loadProperties("src/test/resources/test.properties");
         gpt = new GPT(PropertyUtility.getProperty("token"));
         generator = new DataGenerator(gpt);
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        PropertyUtility.loadProperties("src/test/resources/test.properties");
+        gpt = new GPT(PropertyUtility.getProperty("token"));
+        generator = new DataGenerator(gpt);
+
+        int count = 0;
+        do {
+            try {
+                Pet pet = generator.instantiate(Pet.class, "id");
+                Assert.assertNull("The Id field is not null!", pet.getId());
+                break;
+            }
+            catch (FailedCallException e) {
+                count++;
+                gpt.log.warning("Too many requests to process. Waiting for GPT to be stable...");
+                Thread.sleep(15000);
+                if (count > 3)
+                    break;
+            }
+        }
+        while (true);
     }
 
     @Test

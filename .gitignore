@@ -2,3 +2,4 @@
 /target/
 /${buildDirectory}/
 /null/
+src/test/resources/test.properties
