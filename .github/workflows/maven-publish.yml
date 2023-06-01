@@ -13,7 +13,7 @@ jobs:
       - name: Create property file
         run: echo off
           echo '
-          token=${{ secrets.OPENAI_TOKEN }}
+          token=test-token
           '>./src/test/resources/test.properties
       - name: Read value from Properties-file
         id: read_property
