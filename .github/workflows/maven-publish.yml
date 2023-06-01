@@ -9,14 +9,14 @@ jobs:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Java for publishing to Maven Central Repository
-        uses: actions/setup-java@v1
       - uses: actions/checkout@v2
       - name: Create property file
         run: echo off
           echo '
           token=${{ secrets.OPENAI_TOKEN }}
-          '>src/test/resources/test.properties
+          '>./src/test/resources/test.properties
+      - name: Set up Java for publishing to Maven Central Repository
+        uses: actions/setup-java@v1     
         with:
           java-version: 19
           server-id: ossrh
