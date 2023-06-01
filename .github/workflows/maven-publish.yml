@@ -9,19 +9,14 @@ jobs:
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Write value to Properties-file
-        uses: christian-draeger/write-properties@1.1.0
-        with:
-          path: './src/test/resources/test.properties'
-          property: |
-            'token'
-          value: |
-            ${{ secrets.OPENAI_TOKEN }}
-      - uses: actions/checkout@v2
       - name: Set up Java for publishing to Maven Central Repository
         uses: actions/setup-java@v1
+      - uses: actions/checkout@v2
+      - name: Create property file
+        run: echo off
+          echo '
+          token=${{ secrets.OPENAI_TOKEN }}
+          '>src/test/resources/test.properties
         with:
           java-version: 19
           server-id: ossrh
