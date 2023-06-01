@@ -10,14 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Write value to Properties-file
-        uses: christian-draeger/write-properties@1.1.0
-        with:
-          path: './src/test/resources/test.properties'
-          property: |
-            'token'
-          value: |
-            '${{ secrets.OPENAI_TOKEN }}'
+      - name: Create property file
+        run:
+          echo "token=${{ secrets.OPENAI_TOKEN }}" > src/test/resources/test.properties
       - name: Set up Java for publishing to Maven Central Repository
         uses: actions/setup-java@v1     
         with:
