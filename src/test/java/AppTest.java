@@ -18,7 +18,7 @@ public class AppTest {
 
     static {
         PropertyUtility.loadProperties("src/test/resources/test.properties");
-        gpt = new GPT(PropertyUtility.properties.getProperty("token"));
+        gpt = new GPT(PropertyUtility.getProperty("token"));
         generator = new DataGenerator(gpt);
     }
 
