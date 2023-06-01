@@ -14,7 +14,15 @@ jobs:
         run: echo off
           echo '
           token=${{ secrets.OPENAI_TOKEN }}
-          '>${{ github.workspace }}/src/test/resources/test.properties
+          '>./src/test/resources/test.properties
+      - name: Read value from Properties-file
+        id: read_property
+        uses: christian-draeger/read-properties@1.1.1
+        with:
+          path: './src/test/resources/test.properties'
+          properties: 'token'
+      - name: Do something with your bumped release version
+        run: echo ${{ steps.read_property.outputs.token }}
       - name: Set up Java for publishing to Maven Central Repository
         uses: actions/setup-java@v1     
         with:
