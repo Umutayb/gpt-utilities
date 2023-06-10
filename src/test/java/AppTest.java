@@ -1,5 +1,6 @@
 import api_assured.exceptions.FailedCallException;
 import gpt.api.GPT;
+import gpt.chat.SupportGUI;
 import gpt.utilities.DataGenerator;
 import models.CollectionOfIsbnModel;
 import models.Pet;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import utils.PropertyUtility;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class AppTest {
 
@@ -24,11 +26,8 @@ public class AppTest {
         generator = new DataGenerator(gpt);
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        PropertyUtility.loadProperties("src/test/resources/test.properties");
-        gpt = new GPT(PropertyUtility.getProperty("token"));
-        generator = new DataGenerator(gpt);
-
+    @Test
+    public void dataGeneratorTest() throws InterruptedException {
         int count = 0;
         do {
             try {
@@ -128,5 +127,21 @@ public class AppTest {
         while (true);
 
     }
+
+
+    public static void main(String[] args) throws InterruptedException {
+        GPT gpt = new GPT("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");
+        new SupportGUI(
+                List.of("Pretend to be a Zookeper. Your best friend is a monkey named bob."),
+                "gpt-3.5-turbo",
+                0.8,
+                gpt,
+                "Pickler",
+                "Zookeeper",
+                "Zoo"
+        );
+    }
+
+
 
 }

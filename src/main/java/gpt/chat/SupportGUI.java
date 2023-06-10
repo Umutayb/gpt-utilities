@@ -22,8 +22,10 @@ import java.util.List;
 
 @Data
 public class SupportGUI implements ChatGUI {
+    private JButton sendButton;
+    private JFrame supportPanel;
     private JTextPane chatOverviewPanel = new JTextPane();
-    private JTextField messageInputPanel = new JTextField();
+    private JTextArea messageInputPanel = new JTextArea();
     private String oldMsg;
     private Thread read;
     private String serverName;
@@ -38,6 +40,7 @@ public class SupportGUI implements ChatGUI {
     private GPT gpt;
     private String responderName;
     private String userName;
+    private String chatTitle;
 
     public void startServer(){
         Thread serverThread = new Thread(() -> {
@@ -47,16 +50,8 @@ public class SupportGUI implements ChatGUI {
         serverThread.start();
     }
 
-    @SuppressWarnings("unused")
-    public SupportGUI(List<String> prompts, GPT gpt) {
-        this.gpt = gpt;
-        this.modelName = "gpt-3.5-turbo";
-        this.temperature = 0.5;
+    public void buffer() {
 
-        Caller.keepLogs(false);
-        for (String prompt:prompts) messages.add(new Message("user", prompt));
-        startServer();
-        startSupportGUI();
     }
 
     @SuppressWarnings("unused")
@@ -64,17 +59,8 @@ public class SupportGUI implements ChatGUI {
         this.modelName = "gpt-3.5-turbo";
         this.temperature = 0.7;
         this.gpt = gpt;
-
-        Caller.keepLogs(false);
-        startServer();
-        startSupportGUI();
-    }
-
-    @SuppressWarnings("unused")
-    public SupportGUI(GPT gpt, String userName, String responderName) {
-        this.modelName = "gpt-3.5-turbo";
-        this.temperature = 0.7;
-        this.gpt = gpt;
+        this.userName = "User";
+        this.responderName = "ChatGPT";
 
         Caller.keepLogs(false);
         startServer();
@@ -88,24 +74,28 @@ public class SupportGUI implements ChatGUI {
             double temperature,
             GPT gpt,
             String userName,
-            String responderName
+            String responderName,
+            String chatTitle
             ) {
         this.modelName = modelName;
         this.temperature = temperature;
         this.gpt = gpt;
+        this.chatTitle = chatTitle;
+        this.responderName = responderName;
+        this.userName = userName;
 
         Caller.keepLogs(false);
         startServer();
         startSupportGUI();
+        for (String prompt:prompts) messages.add(new Message("system", prompt));
     }
 
     public void startSupportGUI() {
         try {
             //Font
-            String fontfamily = "Arial, sans-serif";
+            String fontfamily = "OpenSans";
             Font font = new Font(fontfamily, Font.PLAIN, 15);
-
-            final JFrame supportPanel = new JFrame("Pickleib Support");
+            supportPanel = new JFrame(chatTitle);
             supportPanel.getContentPane().setLayout(null);
             supportPanel.setSize(700, 500);
             supportPanel.setResizable(false);
@@ -123,16 +113,17 @@ public class SupportGUI implements ChatGUI {
             chatOverviewPanel.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 
             // Field message user input
-            messageInputPanel.setBounds(0, 350, 400, 50);
+            messageInputPanel.setBounds(0, 350, 290, 50);
             messageInputPanel.setFont(font);
             messageInputPanel.setMargin(new Insets(6, 6, 6, 6));
+            messageInputPanel.setLineWrap(true);
             final JScrollPane messageInputScrollPanel = new JScrollPane(messageInputPanel);
-            messageInputScrollPanel.setBounds(25, 350, 650, 50);
+            messageInputScrollPanel.setBounds(25, 350, 540, 110);
 
             // Send button
-            final JButton sendButton = new JButton("Send");
+            sendButton = new JButton("Send");
             sendButton.setFont(font);
-            sendButton.setBounds(575, 410, 100, 35);
+            sendButton.setBounds(575, 350, 100, 105);
 
             messageInputPanel.addKeyListener(new KeyAdapter() {
                 // Send message on Enter
@@ -159,14 +150,14 @@ public class SupportGUI implements ChatGUI {
             sendButton.addActionListener(ae -> sendMessage());
 
             // Chat overview background color
-            chatOverviewPanel.setBackground(Color.LIGHT_GRAY);
+            chatOverviewPanel.setBackground(Color.LIGHT_GRAY); //new Color(192, 192, 192);
 
             supportPanel.add(chatOverviewScrollPanel);
             supportPanel.setVisible(true);
 
             // Chat panel initial message
             appendToPane(chatOverviewPanel,
-                    "<b>Welcome To Pickleib Support, please ask your questions!</b> "
+                    "<b>Welcome to " + chatTitle + ", please ask your questions!</b>"
             );
 
             // Default server specifications
@@ -187,7 +178,7 @@ public class SupportGUI implements ChatGUI {
             supportPanel.add(messageInputScrollPanel);
             supportPanel.revalidate();
             supportPanel.repaint();
-            chatOverviewPanel.setBackground(Color.WHITE);
+            chatOverviewPanel.setBackground(Color.WHITE); //new Color(192, 192, 192);
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -199,16 +190,42 @@ public class SupportGUI implements ChatGUI {
             String message = messageInputPanel.getText().trim();
             if (message.equals("")) return;
             oldMsg = message;
-            output.println("<b><span style='color:#3079ab'>" + userName + ": </span></b>" + message);
+            output.println("<b><span style='color:#3079ab'>" + userName + ": </span></b>" + message); //HexCode
+
             messages.add(new Message("user", message));
             messageInputPanel.requestFocus();
             messageInputPanel.setText(null);
-            gptResponse();
+
+            messageGPT();
         }
         catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
             System.exit(0);
         }
+    }
+
+    public void messageGPT() {
+        sendButton.setEnabled(false);
+        messageInputPanel.setEnabled(false);
+
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                gptResponse();
+                return null;
+            }
+        };
+
+        worker.addPropertyChangeListener(evt -> {
+            if (SwingWorker.StateValue.DONE == evt.getNewValue()) {
+                // you should also call get() on the worker allowing
+                // you to capture and handle all exceptions it might throw
+                messageInputPanel.setEnabled(true);
+                sendButton.setEnabled(true);
+            }
+        });
+
+        worker.execute();  // run the worker
     }
 
     public void gptResponse() {
@@ -226,7 +243,7 @@ public class SupportGUI implements ChatGUI {
                 );
             messages.add(messageResponse.getChoices().get(0).getMessage());
             String message = messageResponse.getChoices().get(0).getMessage().getContent();
-            output.println("<b><span style='color:#4d7358'>" + responderName + ": </span></b>" + message);
+            output.println("<b><span style='color:#4d7358'>" + responderName + ": </span></b>" + message); //HexCode
         }
         catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
