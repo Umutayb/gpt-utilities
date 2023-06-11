@@ -1,4 +1,4 @@
-package gpt.chat;
+package gpt.chat.server;
 
 import utils.Printer;
 import utils.TextParser;
@@ -71,7 +71,7 @@ class UserHandler implements Runnable {
 
     private final Server server;
     private final User user;
-    private TextParser textParser = new TextParser();
+    private final TextParser textParser = new TextParser();
 
     public UserHandler(Server server, User user) {
         this.server = server;

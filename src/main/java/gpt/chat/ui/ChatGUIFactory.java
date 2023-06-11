@@ -1,8 +1,8 @@
-package gpt.chat;
+package gpt.chat.ui;
 
 import gpt.api.GPT;
-import gpt.chat.theme.SupportGUIDark;
-import gpt.chat.theme.SupportGUILight;
+import gpt.chat.ui.theme.SupportGUIDark;
+import gpt.chat.ui.theme.SupportGUILight;
 import lombok.Getter;
 
 import java.util.Arrays;

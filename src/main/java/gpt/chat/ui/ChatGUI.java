@@ -1,4 +1,6 @@
-package gpt.chat;
+package gpt.chat.ui;
+
+import gpt.chat.CustomTextArea;
 
 import javax.swing.*;
 
@@ -9,6 +11,6 @@ public interface ChatGUI {
     void sendMessage();
     void messageGPT();
     void gptResponse();
-    void appendToPane(JTextPane textPane, String message);
+    void appendToPane(JTextPane textPane, String message, Boolean isBlock);
 
 }

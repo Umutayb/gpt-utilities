@@ -1,4 +1,4 @@
-package gpt.chat;
+package gpt.chat.ui;
 
 import java.awt.event.MouseAdapter;
 import javax.swing.*;
