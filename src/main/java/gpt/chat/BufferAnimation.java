@@ -2,15 +2,20 @@ package gpt.chat;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.Arc2D;
-
 
 public class BufferAnimation {
 
     public static void main(String[] args) {
-        new BufferAnimation();
+        JFrame frame = new JFrame("Testing");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        AnimationPanel animationPanel = new AnimationPanel();
+        frame.setGlassPane(animationPanel);
+        animationPanel.setVisible(true);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setMinimumSize(new Dimension(300,300));
+        frame.setVisible(true);
     }
 
     public BufferAnimation() {
@@ -20,17 +25,10 @@ public class BufferAnimation {
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
                 ex.printStackTrace();
             }
-
-            JFrame frame = new JFrame("Testing");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.add(new TestPane());
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
         });
     }
 
-    public static class TestPane extends JPanel {
+    public static class AnimationPanel extends JPanel {
         private double angle;
         private double extent;
 
@@ -39,7 +37,8 @@ public class BufferAnimation {
 
         private boolean flip = false;
 
-        public TestPane() {
+        public AnimationPanel() {
+            setOpaque(false);
             Timer timer = new Timer(10, e -> {
                 angle += angleDelta;
                 extent += extentDelta;
@@ -73,14 +72,19 @@ public class BufferAnimation {
             g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-            Arc2D.Double arc = new Arc2D.Double(50, 50, 100, 100, angle, extent, Arc2D.OPEN);
+            // For semi-transparency
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+            g2d.setPaint(Color.GRAY);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+            g2d.setPaint(Color.BLACK);
+
+            Arc2D.Double arc = new Arc2D.Double((double) (getWidth() - 100) / 2, (double) (getHeight() - 100) / 2, 100, 100, angle, extent, Arc2D.OPEN);
             BasicStroke stroke = new BasicStroke(4, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
             g2d.setStroke(stroke);
-            g2d.setColor(Color.WHITE);
+            g2d.setColor(Color.black);
             g2d.draw(arc);
             g2d.dispose();
         }
 
     }
-
 }

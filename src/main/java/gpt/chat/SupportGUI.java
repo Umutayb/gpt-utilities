@@ -24,7 +24,7 @@ import java.util.List;
 public class SupportGUI implements ChatGUI {
     private JButton sendButton;
     private JFrame supportPanel;
-    JPanel panel = new BufferAnimation.TestPane();
+    private JPanel loadingAnimation = new BufferAnimation.AnimationPanel();
     private JTextPane chatOverviewPanel = new JTextPane();
     private JTextArea messageInputPanel = new JTextArea();
     private String oldMsg;
@@ -185,16 +185,19 @@ public class SupportGUI implements ChatGUI {
             read = new Read();
             read.start();
 
-            panel.setLocation(supportPanel.getLocation());
-            panel.setSize(supportPanel.getSize());
-            panel.setVisible(false);
-
-            supportPanel.add(panel);
-            supportPanel.add(sendButton);
-            supportPanel.add(messageInputScrollPanel);
+            supportPanel.add(sendButton, JLayeredPane.DEFAULT_LAYER);
+            supportPanel.add(messageInputScrollPanel, JLayeredPane.DEFAULT_LAYER);
             supportPanel.revalidate();
             supportPanel.repaint();
             chatOverviewPanel.setBackground(Color.WHITE); //new Color(192, 192, 192);
+
+
+            loadingAnimation.setLocation(0,0);
+            loadingAnimation.setBounds(supportPanel.getBounds());
+            loadingAnimation.setPreferredSize(supportPanel.getPreferredSize());
+            loadingAnimation.setSize(supportPanel.getSize());
+            loadingAnimation.setVisible(false);
+            supportPanel.setGlassPane(loadingAnimation);
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -223,7 +226,7 @@ public class SupportGUI implements ChatGUI {
     public void messageGPT() {
         sendButton.setEnabled(false);
         messageInputPanel.setEnabled(false);
-        panel.setVisible(true);
+        loadingAnimation.setVisible(true);
 
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
@@ -239,7 +242,7 @@ public class SupportGUI implements ChatGUI {
                 // you to capture and handle all exceptions it might throw
                 messageInputPanel.setEnabled(true);
                 sendButton.setEnabled(true);
-                panel.setVisible(false);
+                loadingAnimation.setVisible(false);
             }
         });
 
