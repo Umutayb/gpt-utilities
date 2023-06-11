@@ -24,6 +24,7 @@ import java.util.List;
 public class SupportGUI implements ChatGUI {
     private JButton sendButton;
     private JFrame supportPanel;
+    JPanel panel = new BufferAnimation.TestPane();
     private JTextPane chatOverviewPanel = new JTextPane();
     private JTextArea messageInputPanel = new JTextArea();
     private String oldMsg;
@@ -128,8 +129,10 @@ public class SupportGUI implements ChatGUI {
             messageInputPanel.addKeyListener(new KeyAdapter() {
                 // Send message on Enter
                 public void keyPressed(KeyEvent e) {
-                    if (e.getKeyCode() == KeyEvent.VK_ENTER)
+
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                         sendMessage();
+                    }
 
                     // Get last message typed
                     if (e.getKeyCode() == KeyEvent.VK_UP) {
@@ -143,6 +146,7 @@ public class SupportGUI implements ChatGUI {
                         messageInputPanel.setText(oldMsg);
                         oldMsg = currentMessage;
                     }
+
                 }
             });
 
@@ -171,9 +175,21 @@ public class SupportGUI implements ChatGUI {
             input = new BufferedReader(new InputStreamReader(server.getInputStream()));
             output = new PrintWriter(server.getOutputStream(), true);
 
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                ex.printStackTrace();
+            }
+
             // Create new read thread
             read = new Read();
             read.start();
+
+            panel.setLocation(supportPanel.getLocation());
+            panel.setSize(supportPanel.getSize());
+            panel.setVisible(false);
+
+            supportPanel.add(panel);
             supportPanel.add(sendButton);
             supportPanel.add(messageInputScrollPanel);
             supportPanel.revalidate();
@@ -207,10 +223,11 @@ public class SupportGUI implements ChatGUI {
     public void messageGPT() {
         sendButton.setEnabled(false);
         messageInputPanel.setEnabled(false);
+        panel.setVisible(true);
 
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
-            protected Void doInBackground() throws Exception {
+            protected Void doInBackground() {
                 gptResponse();
                 return null;
             }
@@ -222,6 +239,7 @@ public class SupportGUI implements ChatGUI {
                 // you to capture and handle all exceptions it might throw
                 messageInputPanel.setEnabled(true);
                 sendButton.setEnabled(true);
+                panel.setVisible(false);
             }
         });
 
