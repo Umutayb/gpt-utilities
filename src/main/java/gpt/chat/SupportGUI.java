@@ -171,7 +171,6 @@ public class SupportGUI implements ChatGUI {
             PORT = Integer.parseInt(port);
 
             server = new Socket(serverName, PORT);
-
             input = new BufferedReader(new InputStreamReader(server.getInputStream()));
             output = new PrintWriter(server.getOutputStream(), true);
 
@@ -191,11 +190,9 @@ public class SupportGUI implements ChatGUI {
             supportPanel.repaint();
             chatOverviewPanel.setBackground(Color.WHITE); //new Color(192, 192, 192);
 
-
             loadingAnimation.setLocation(0,0);
             loadingAnimation.setBounds(supportPanel.getBounds());
             loadingAnimation.setPreferredSize(supportPanel.getPreferredSize());
-            loadingAnimation.setSize(supportPanel.getSize());
             loadingAnimation.setVisible(false);
             supportPanel.setGlassPane(loadingAnimation);
         }

@@ -8,7 +8,7 @@ import java.awt.geom.Arc2D;
 public class BufferAnimation {
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Testing");
+        JFrame frame = new JFrame("Glass Pane Loading Animation");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         AnimationPanel animationPanel = new AnimationPanel();
         frame.setGlassPane(animationPanel);
@@ -87,6 +87,5 @@ public class BufferAnimation {
             g2d.draw(arc);
             g2d.dispose();
         }
-
     }
 }
