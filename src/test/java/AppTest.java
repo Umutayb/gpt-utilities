@@ -135,13 +135,13 @@ public class AppTest {
         //GPT gpt = new GPT(PropertyUtility.getProperty("token"));
         GPT gpt = new GPT("");
         new SupportGUI(
-                List.of("Pretend to be a Zookeper. Your best friend is a monkey named bob."),
+                List.of("You are my assistant, you know java, swing applications, regex, JPanel etc."),
                 "gpt-3.5-turbo",
                 0.8,
                 gpt,
-                "Pickler",
-                "Zookeeper",
-                "Zoo"
+                "Zan",
+                "Assistant",
+                "Assistant"
         );
     }
 
