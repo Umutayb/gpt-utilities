@@ -1,7 +1,6 @@
 import api_assured.exceptions.FailedCallException;
 import gpt.api.GPT;
 import gpt.chat.ChatGUIFactory;
-import gpt.chat.SupportGUILight;
 import gpt.utilities.DataGenerator;
 import models.CollectionOfIsbnModel;
 import models.Pet;
@@ -127,10 +126,10 @@ public class AppTest {
         while (true);
 
     }
-    
-    public static void main(String[] args) throws InterruptedException {
+
+    public static void main(String[] args) {
         PropertyUtility.loadProperties("src/test/resources/test.properties");
         GPT gpt = new GPT(PropertyUtility.getProperty("token"));
-        ChatGUIFactory.getChatGUI(ChatGUIFactory.Theme.getTheme("light"), gpt);
+        ChatGUIFactory.getChatGUI(ChatGUIFactory.Theme.dark, gpt);
     }
 }

@@ -1,6 +1,8 @@
 package gpt.chat;
 
 import gpt.api.GPT;
+import gpt.chat.theme.SupportGUIDark;
+import gpt.chat.theme.SupportGUILight;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -23,9 +25,9 @@ public class ChatGUIFactory {
 
     public static ChatGUI getChatGUI(Theme theme, GPT gpt){
         switch (theme){
-            case dark -> {return new SupportGUILight(gpt);}
+            case dark -> {return new SupportGUIDark(gpt);}
             case light -> {return new SupportGUILight(gpt);}
-            default -> {return new SupportGUILight(gpt);}
+            default -> {return new SupportGUIDark(gpt);}
         }
     }
 }

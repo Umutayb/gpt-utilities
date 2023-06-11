@@ -1,16 +1,15 @@
-package gpt.chat;
+package gpt.chat.theme;
 
 import api_assured.Caller;
 import gpt.api.GPT;
+import gpt.chat.BufferAnimation;
+import gpt.chat.ChatGUI;
+import gpt.chat.Server;
 import gpt.models.Message;
 import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
 import lombok.Data;
-import utils.TextParser;
-
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicButtonUI;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
@@ -29,8 +28,6 @@ public class SupportGUILight implements ChatGUI {
     private JButton sendButton;
     private JFrame supportPanel;
     private JPanel loadingAnimation = new BufferAnimation.AnimationPanel();
-    private JScrollPane chatOverviewScrollPane;
-    private JScrollPane messageInputScrollPane;
     private JTextPane chatOverviewPanel = new JTextPane();
     private JTextArea messageInputPanel = new JTextArea();
     private String oldMsg;
@@ -48,8 +45,6 @@ public class SupportGUILight implements ChatGUI {
     private String responderName;
     private String userName;
     private String chatTitle;
-    private TextParser textParser = new TextParser();
-    private JTextPane codeView;
 
     public void startServer(){
         Thread serverThread = new Thread(() -> {
@@ -57,6 +52,10 @@ public class SupportGUILight implements ChatGUI {
             catch (IOException e) {throw new RuntimeException(e);}
         });
         serverThread.start();
+    }
+
+    public void buffer() {
+
     }
 
     @SuppressWarnings("unused")
@@ -82,7 +81,7 @@ public class SupportGUILight implements ChatGUI {
             String userName,
             String responderName,
             String chatTitle
-            ) {
+    ) {
         this.modelName = modelName;
         this.temperature = temperature;
         this.gpt = gpt;
@@ -96,136 +95,11 @@ public class SupportGUILight implements ChatGUI {
         for (String prompt:prompts) messages.add(new Message("system", prompt));
     }
 
-    public void setColors() {
-
-        new ColorTitleBar();
-
-        supportPanel.getContentPane().setBackground(new Color(46 , 46 ,52));
-        supportPanel.setBackground(new Color(46 , 46 ,52));
-
-        chatOverviewPanel.setBackground(new Color(67 , 69 ,74));
-        messageInputPanel.setBackground(new Color(67 , 69 ,74));
-
-        sendButton.setBackground(new Color(67 , 69 ,74));
-        sendButton.setOpaque(true);
-        sendButton.setBorderPainted(false);
-
-
-    }
-
-    public void setScrollPane() {
-        chatOverviewScrollPane.setBackground(new Color(46 , 46 ,52));
-        chatOverviewScrollPane.setBorder(BorderFactory.createLineBorder(new Color(46 , 46 ,52)));
-        chatOverviewScrollPane.getVerticalScrollBar().setBackground(new Color(67 , 69 ,74));
-        chatOverviewScrollPane.getHorizontalScrollBar().setBackground(new Color(67 , 69 ,74));
-
-        messageInputScrollPane.setBackground(new Color(46 , 46 ,52));
-        messageInputScrollPane.setBorder(BorderFactory.createLineBorder(new Color(46 , 46 ,52)));
-        messageInputScrollPane.getHorizontalScrollBar().setBackground(new Color(67 , 69 ,74));
-        messageInputScrollPane.getVerticalScrollBar().setBackground(new Color(67 , 69 ,74));
-
-        chatOverviewScrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-            private static final Color THUMB_COLOR = new Color(46 , 46 ,52);
-            private static final Color TRACK_COLOR = new Color(67 , 69 ,74);
-
-            @Override
-            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(THUMB_COLOR);
-                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-                g2.dispose();
-            }
-
-            @Override
-            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(TRACK_COLOR);
-                g2.fillRoundRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height, 10, 10);
-                g2.dispose();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton jbutton = new JButton();
-                jbutton.setPreferredSize(new Dimension(0, 0));
-                jbutton.setMinimumSize(new Dimension(0, 0));
-                jbutton.setMaximumSize(new Dimension(0, 0));
-                return jbutton;
-            }
-        });
-
-        messageInputScrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-            private static final Color THUMB_COLOR = new Color(46 , 46 ,52);
-            private static final Color TRACK_COLOR = new Color(67 , 69 ,74);
-
-            @Override
-            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(THUMB_COLOR);
-                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-                g2.dispose();
-            }
-
-            @Override
-            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(TRACK_COLOR);
-                g2.fillRoundRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height, 10, 10);
-                g2.dispose();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton jbutton = new JButton();
-                jbutton.setPreferredSize(new Dimension(0, 0));
-                jbutton.setMinimumSize(new Dimension(0, 0));
-                jbutton.setMaximumSize(new Dimension(0, 0));
-                return jbutton;
-            }
-        });
-    }
-
-    public void setFonts() {
-        String fontfamily = "SansSerif";
-        Font font = new Font(fontfamily, Font.PLAIN, 14);
-        chatOverviewPanel.setFont(font);
-        messageInputPanel.setFont(font);
-        messageInputPanel.setLineWrap(true);
-        sendButton.setFont(font);
-
-        //Font Color
-        supportPanel.setForeground(new Color(222, 221, 228));
-        chatOverviewPanel.setForeground(new Color(222, 221, 228));
-        messageInputPanel.setForeground(new Color(222, 221, 228));
-        sendButton.setForeground(new Color(222, 221, 228));
-
-        chatOverviewPanel.setEditable(false);
-    }
-
     public void startSupportGUI() {
         try {
+            //Font
+            String fontfamily = "OpenSans";
+            Font font = new Font(fontfamily, Font.PLAIN, 15);
             supportPanel = new JFrame(chatTitle);
             supportPanel.getContentPane().setLayout(null);
             supportPanel.setSize(700, 500);
@@ -233,24 +107,28 @@ public class SupportGUILight implements ChatGUI {
             supportPanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             // Chat panel
-            chatOverviewPanel.setBounds(15, 15, 665, 320);
+            chatOverviewPanel.setBounds(25, 25, 650, 320);
+            chatOverviewPanel.setFont(font);
             chatOverviewPanel.setMargin(new Insets(6, 6, 6, 6));
-            chatOverviewScrollPane = new JScrollPane(chatOverviewPanel);
-            chatOverviewScrollPane.setBounds(15, 15, 670, 320);
-            chatOverviewScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            chatOverviewPanel.setEditable(false);
+            JScrollPane chatOverviewScrollPanel = new JScrollPane(chatOverviewPanel);
+            chatOverviewScrollPanel.setBounds(25, 25, 650, 320);
 
             chatOverviewPanel.setContentType("text/html");
             chatOverviewPanel.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 
             // Field message user input
             messageInputPanel.setBounds(0, 350, 290, 50);
+            messageInputPanel.setFont(font);
             messageInputPanel.setMargin(new Insets(6, 6, 6, 6));
-            messageInputScrollPane = new JScrollPane(messageInputPanel);
-            messageInputScrollPane.setBounds(15, 345, 555, 110);
+            messageInputPanel.setLineWrap(true);
+            final JScrollPane messageInputScrollPanel = new JScrollPane(messageInputPanel);
+            messageInputScrollPanel.setBounds(25, 350, 540, 110);
 
             // Send button
             sendButton = new JButton("Send");
-            sendButton.setBounds(580, 346, 105, 108);
+            sendButton.setFont(font);
+            sendButton.setBounds(575, 350, 100, 105);
 
             messageInputPanel.addKeyListener(new KeyAdapter() {
                 // Send message on Enter
@@ -279,7 +157,10 @@ public class SupportGUILight implements ChatGUI {
             // Send button click action
             sendButton.addActionListener(ae -> sendMessage());
 
-            supportPanel.add(chatOverviewScrollPane);
+            // Chat overview background color
+            chatOverviewPanel.setBackground(Color.LIGHT_GRAY); //new Color(192, 192, 192);
+
+            supportPanel.add(chatOverviewScrollPanel);
             supportPanel.setVisible(true);
 
             // Chat panel initial message
@@ -308,23 +189,20 @@ public class SupportGUILight implements ChatGUI {
             read.start();
 
             supportPanel.add(sendButton, JLayeredPane.DEFAULT_LAYER);
-            supportPanel.add(messageInputScrollPane, JLayeredPane.DEFAULT_LAYER);
+            supportPanel.add(messageInputScrollPanel, JLayeredPane.DEFAULT_LAYER);
             supportPanel.revalidate();
             supportPanel.repaint();
+            chatOverviewPanel.setBackground(Color.WHITE); //new Color(192, 192, 192);
 
             loadingAnimation.setLocation(0,0);
             loadingAnimation.setBounds(supportPanel.getBounds());
             loadingAnimation.setPreferredSize(supportPanel.getPreferredSize());
             loadingAnimation.setVisible(false);
             supportPanel.setGlassPane(loadingAnimation);
-
         }
         catch (IOException e) {
             throw new RuntimeException(e);
         }
-        setFonts();
-        setColors();
-        setScrollPane();
     }
 
     public void sendMessage() {
@@ -332,7 +210,7 @@ public class SupportGUILight implements ChatGUI {
             String message = messageInputPanel.getText().trim();
             if (message.equals("")) return;
             oldMsg = message;
-            output.println("<b><span style='color:#c86730'>" + userName + ": </span></b>" + message); //HexCode
+            output.println("<b><span style='color:#3079ab'>" + userName + ": </span></b>" + message); //HexCode
 
             messages.add(new Message("user", message));
             messageInputPanel.requestFocus();
@@ -387,19 +265,12 @@ public class SupportGUILight implements ChatGUI {
                 );
             messages.add(messageResponse.getChoices().get(0).getMessage());
             String message = messageResponse.getChoices().get(0).getMessage().getContent();
-            if (message.contains("´´´")) {
-                String code = textParser.parse("´´´","´´´",message);
-                //CodeBlockExample.formatCode(codeView, code);
-                output.println("<b><span style='color:#B46C30'>" + responderName + ": </span></b>" + message + "\n" + code);
-            }
-
-            output.println("<b><span style='color:#49984d'>" + responderName + ": </span></b>" + message); //HexCode
+            output.println("<b><span style='color:#4d7358'>" + responderName + ": </span></b>" + message); //HexCode
         }
         catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
             System.exit(0);
         }
-
     }
 
     public void appendToPane(JTextPane textPane, String message){
