@@ -7,6 +7,8 @@ import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
 import lombok.Data;
 import javax.swing.*;
+import javax.swing.plaf.ScrollBarUI;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
@@ -25,6 +27,8 @@ public class SupportGUI implements ChatGUI {
     private JButton sendButton;
     private JFrame supportPanel;
     private JPanel loadingAnimation = new BufferAnimation.AnimationPanel();
+    private JScrollPane chatOverviewScrollPanel;
+    private JScrollPane messageInputScrollPanel;
     private JTextPane chatOverviewPanel = new JTextPane();
     private JTextArea messageInputPanel = new JTextArea();
     private String oldMsg;
@@ -49,10 +53,6 @@ public class SupportGUI implements ChatGUI {
             catch (IOException e) {throw new RuntimeException(e);}
         });
         serverThread.start();
-    }
-
-    public void buffer() {
-
     }
 
     @SuppressWarnings("unused")
@@ -91,11 +91,97 @@ public class SupportGUI implements ChatGUI {
         for (String prompt:prompts) messages.add(new Message("system", prompt));
     }
 
+    public void setColors() {
+
+        new ColorTitleBar();
+
+        supportPanel.getContentPane().setBackground(new Color(46 , 46 ,52));
+        supportPanel.setBackground(new Color(46 , 46 ,52));
+
+        chatOverviewPanel.setBackground(new Color(67 , 69 ,74));
+        messageInputPanel.setBackground(new Color(67 , 69 ,74));
+
+        chatOverviewScrollPanel.setBackground(new Color(46 , 46 ,52));
+        chatOverviewScrollPanel.setBorder(BorderFactory.createLineBorder(new Color(46 , 46 ,52)));
+        chatOverviewScrollPanel.getVerticalScrollBar().setBackground(new Color(67 , 69 ,74));
+        chatOverviewScrollPanel.getHorizontalScrollBar().setBackground(new Color(67 , 69 ,74));
+
+        messageInputScrollPanel.setBackground(new Color(46 , 46 ,52));
+        messageInputScrollPanel.setBorder(BorderFactory.createLineBorder(new Color(46 , 46 ,52)));
+        messageInputScrollPanel.getHorizontalScrollBar().setBackground(new Color(67 , 69 ,74));
+        messageInputScrollPanel.getVerticalScrollBar().setBackground(new Color(67 , 69 ,74));
+
+        sendButton.setBackground(new Color(67 , 69 ,74));
+        sendButton.setOpaque(true);
+        sendButton.setBorderPainted(false);
+
+        chatOverviewScrollPanel.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            private JButton createZeroButton() {
+                JButton jbutton = new JButton();
+                jbutton.setPreferredSize(new Dimension(0, 0));
+                jbutton.setMinimumSize(new Dimension(0, 0));
+                jbutton.setMaximumSize(new Dimension(0, 0));
+                return jbutton;
+            }
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(46 , 46 ,52);
+            }
+        });
+
+        messageInputScrollPanel.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
+            private JButton createZeroButton() {
+                JButton jbutton = new JButton();
+                jbutton.setPreferredSize(new Dimension(0, 0));
+                jbutton.setMinimumSize(new Dimension(0, 0));
+                jbutton.setMaximumSize(new Dimension(0, 0));
+                return jbutton;
+            }
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(46 , 46 ,52);
+            }
+        });
+
+    }
+
+    public void setFonts() {
+        String fontfamily = "JetBrains Mono";
+        Font font = new Font(fontfamily, Font.PLAIN, 15);
+        chatOverviewPanel.setFont(font);
+        messageInputPanel.setFont(font);
+        messageInputPanel.setLineWrap(true);
+        sendButton.setFont(font);
+
+        //Font Color
+        supportPanel.setForeground(new Color(222, 221, 228));
+        chatOverviewPanel.setForeground(new Color(222, 221, 228));
+        messageInputPanel.setForeground(new Color(222, 221, 228));
+        sendButton.setForeground(new Color(222, 221, 228));
+
+        chatOverviewPanel.setEditable(false);
+    }
+
     public void startSupportGUI() {
         try {
-            //Font
-            String fontfamily = "OpenSans";
-            Font font = new Font(fontfamily, Font.PLAIN, 15);
             supportPanel = new JFrame(chatTitle);
             supportPanel.getContentPane().setLayout(null);
             supportPanel.setSize(700, 500);
@@ -103,28 +189,24 @@ public class SupportGUI implements ChatGUI {
             supportPanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             // Chat panel
-            chatOverviewPanel.setBounds(25, 25, 650, 320);
-            chatOverviewPanel.setFont(font);
+            chatOverviewPanel.setBounds(15, 15, 670, 320);
             chatOverviewPanel.setMargin(new Insets(6, 6, 6, 6));
-            chatOverviewPanel.setEditable(false);
-            JScrollPane chatOverviewScrollPanel = new JScrollPane(chatOverviewPanel);
-            chatOverviewScrollPanel.setBounds(25, 25, 650, 320);
+            chatOverviewScrollPanel = new JScrollPane(chatOverviewPanel);
+            chatOverviewScrollPanel.setBounds(15, 15, 670, 320);
+            chatOverviewScrollPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
             chatOverviewPanel.setContentType("text/html");
             chatOverviewPanel.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 
             // Field message user input
             messageInputPanel.setBounds(0, 350, 290, 50);
-            messageInputPanel.setFont(font);
             messageInputPanel.setMargin(new Insets(6, 6, 6, 6));
-            messageInputPanel.setLineWrap(true);
-            final JScrollPane messageInputScrollPanel = new JScrollPane(messageInputPanel);
-            messageInputScrollPanel.setBounds(25, 350, 540, 110);
+            messageInputScrollPanel = new JScrollPane(messageInputPanel);
+            messageInputScrollPanel.setBounds(15, 345, 555, 110);
 
             // Send button
             sendButton = new JButton("Send");
-            sendButton.setFont(font);
-            sendButton.setBounds(575, 350, 100, 105);
+            sendButton.setBounds(580, 346, 105, 108);
 
             messageInputPanel.addKeyListener(new KeyAdapter() {
                 // Send message on Enter
@@ -152,9 +234,6 @@ public class SupportGUI implements ChatGUI {
 
             // Send button click action
             sendButton.addActionListener(ae -> sendMessage());
-
-            // Chat overview background color
-            chatOverviewPanel.setBackground(Color.LIGHT_GRAY); //new Color(192, 192, 192);
 
             supportPanel.add(chatOverviewScrollPanel);
             supportPanel.setVisible(true);
@@ -189,7 +268,6 @@ public class SupportGUI implements ChatGUI {
             supportPanel.add(messageInputScrollPanel, JLayeredPane.DEFAULT_LAYER);
             supportPanel.revalidate();
             supportPanel.repaint();
-            chatOverviewPanel.setBackground(Color.WHITE); //new Color(192, 192, 192);
 
 
             loadingAnimation.setLocation(0,0);
@@ -198,10 +276,13 @@ public class SupportGUI implements ChatGUI {
             loadingAnimation.setSize(supportPanel.getSize());
             loadingAnimation.setVisible(false);
             supportPanel.setGlassPane(loadingAnimation);
+
         }
         catch (IOException e) {
             throw new RuntimeException(e);
         }
+        setFonts();
+        setColors();
     }
 
     public void sendMessage() {
@@ -209,7 +290,7 @@ public class SupportGUI implements ChatGUI {
             String message = messageInputPanel.getText().trim();
             if (message.equals("")) return;
             oldMsg = message;
-            output.println("<b><span style='color:#3079ab'>" + userName + ": </span></b>" + message); //HexCode
+            output.println("<b><span style='color:#57975C'>" + userName + ": </span></b>" + message); //HexCode
 
             messages.add(new Message("user", message));
             messageInputPanel.requestFocus();
@@ -264,7 +345,7 @@ public class SupportGUI implements ChatGUI {
                 );
             messages.add(messageResponse.getChoices().get(0).getMessage());
             String message = messageResponse.getChoices().get(0).getMessage().getContent();
-            output.println("<b><span style='color:#4d7358'>" + responderName + ": </span></b>" + message); //HexCode
+            output.println("<b><span style='color:#B46C30'>" + responderName + ": </span></b>" + message); //HexCode
         }
         catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());

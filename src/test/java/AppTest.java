@@ -130,8 +130,10 @@ public class AppTest {
 
 
     public static void main(String[] args) throws InterruptedException {
-        PropertyUtility.loadProperties("src/test/resources/test.properties");
-        GPT gpt = new GPT(PropertyUtility.getProperty("token"));
+
+        //PropertyUtility.loadProperties("src/test/resources/test.properties");
+        //GPT gpt = new GPT(PropertyUtility.getProperty("token"));
+        GPT gpt = new GPT("");
         new SupportGUI(
                 List.of("Pretend to be a Zookeper. Your best friend is a monkey named bob."),
                 "gpt-3.5-turbo",
