@@ -1,5 +1,6 @@
 package gpt.chat;
 
+import java.awt.event.MouseAdapter;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Arc2D;
@@ -7,7 +8,7 @@ import java.awt.geom.Arc2D;
 public class BufferAnimation {
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Testing");
+        JFrame frame = new JFrame("Glass Pane Loading Animation");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         AnimationPanel animationPanel = new AnimationPanel();
         frame.setGlassPane(animationPanel);
@@ -38,6 +39,7 @@ public class BufferAnimation {
         private boolean flip = false;
 
         public AnimationPanel() {
+            addMouseListener(new MouseAdapter() {});
             setOpaque(false);
             Timer timer = new Timer(10, e -> {
                 angle += angleDelta;
@@ -85,6 +87,5 @@ public class BufferAnimation {
             g2d.draw(arc);
             g2d.dispose();
         }
-
     }
 }
