@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class SupportGUI implements ChatGUI {
+public class SupportGUILight implements ChatGUI {
     private JButton sendButton;
     private JFrame supportPanel;
     private JPanel loadingAnimation = new BufferAnimation.AnimationPanel();
@@ -60,12 +60,13 @@ public class SupportGUI implements ChatGUI {
     }
 
     @SuppressWarnings("unused")
-    public SupportGUI(GPT gpt) {
+    public SupportGUILight(GPT gpt) {
         this.modelName = "gpt-3.5-turbo";
         this.temperature = 0.7;
         this.gpt = gpt;
         this.userName = "User";
         this.responderName = "ChatGPT";
+        this.chatTitle = "Chat";
 
         Caller.keepLogs(false);
         startServer();
@@ -73,7 +74,7 @@ public class SupportGUI implements ChatGUI {
     }
 
     @SuppressWarnings("unused")
-    public SupportGUI(
+    public SupportGUILight(
             List<String> prompts,
             String modelName,
             double temperature,
