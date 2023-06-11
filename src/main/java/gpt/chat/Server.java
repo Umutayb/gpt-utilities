@@ -1,5 +1,6 @@
 package gpt.chat;
 
+import utils.Printer;
 import utils.TextParser;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.util.Scanner;
 
 public class Server {
 
+    private Printer log = new Printer(Server.class);
     private final int port;
     private static List<User> clients = new ArrayList<>();
     ServerSocket server;
@@ -28,7 +30,8 @@ public class Server {
                 this.close();
             }
         };
-        System.out.println("Port 12345 is now open.");
+        //System.out.println("Port 12345 is now open.");
+        log.info("Initializing GPT...");
 
         do {
             // accepts a new client

@@ -128,8 +128,8 @@ public class AppTest {
     }
 
     public static void main(String[] args) {
-        PropertyUtility.loadProperties("src/test/resources/test.properties");
-        GPT gpt = new GPT(PropertyUtility.getProperty("token"));
+        //PropertyUtility.loadProperties("src/test/resources/test.properties");
+        GPT gpt = new GPT("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");
         ChatGUIFactory.getChatGUI(ChatGUIFactory.Theme.dark, gpt);
     }
 }

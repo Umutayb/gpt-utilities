@@ -2,9 +2,7 @@ package gpt.chat.theme;
 
 import api_assured.Caller;
 import gpt.api.GPT;
-import gpt.chat.BufferAnimation;
-import gpt.chat.ChatGUI;
-import gpt.chat.Server;
+import gpt.chat.*;
 import gpt.models.Message;
 import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
@@ -15,6 +13,7 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
@@ -250,6 +249,7 @@ public class SupportGUIDark implements ChatGUI {
             sendButton = new JButton("Send");
             sendButton.setBounds(580, 346, 105, 108);
 
+
             messageInputPanel.addKeyListener(new KeyAdapter() {
                 // Send message on Enter
                 public void keyPressed(KeyEvent e) {
@@ -285,6 +285,8 @@ public class SupportGUIDark implements ChatGUI {
                     "<b>Welcome to " + chatTitle + ", please ask your questions!</b>"
             );
 
+            //TextEditor.setCodeBlock(supportPanel, chatOverviewPanel);
+
             // Default server specifications
             name = "User";
             String port = "12345";
@@ -315,14 +317,14 @@ public class SupportGUIDark implements ChatGUI {
             loadingAnimation.setPreferredSize(supportPanel.getPreferredSize());
             loadingAnimation.setVisible(false);
             supportPanel.setGlassPane(loadingAnimation);
+            setFonts();
+            setColors();
+            setScrollPane();
 
         }
         catch (IOException e) {
             throw new RuntimeException(e);
         }
-        setFonts();
-        setColors();
-        setScrollPane();
     }
 
     public void sendMessage() {
@@ -385,11 +387,6 @@ public class SupportGUIDark implements ChatGUI {
                 );
             messages.add(messageResponse.getChoices().get(0).getMessage());
             String message = messageResponse.getChoices().get(0).getMessage().getContent();
-            if (message.contains("´´´")) {
-                String code = textParser.parse("´´´","´´´",message);
-                //CodeBlockExample.formatCode(codeView, code);
-                output.println("<b><span style='color:#B46C30'>" + responderName + ": </span></b>" + message + "\n" + code);
-            }
 
             output.println("<b><span style='color:#49984d'>" + responderName + ": </span></b>" + message); //HexCode
         }

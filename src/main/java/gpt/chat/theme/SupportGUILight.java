@@ -196,7 +196,7 @@ public class SupportGUILight implements ChatGUI {
 
             loadingAnimation.setLocation(0,0);
             loadingAnimation.setBounds(supportPanel.getBounds());
-            loadingAnimation.setPreferredSize(supportPanel.getPreferredSize());
+            //loadingAnimation.setPreferredSize(supportPanel.getPreferredSize());
             loadingAnimation.setVisible(false);
             supportPanel.setGlassPane(loadingAnimation);
         }

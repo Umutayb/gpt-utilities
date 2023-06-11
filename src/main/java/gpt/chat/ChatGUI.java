@@ -10,4 +10,5 @@ public interface ChatGUI {
     void messageGPT();
     void gptResponse();
     void appendToPane(JTextPane textPane, String message);
+
 }
