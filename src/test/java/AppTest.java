@@ -1,12 +1,6 @@
 import api_assured.exceptions.FailedCallException;
 import gpt.api.GPT;
-<<<<<<< Updated upstream
-=======
-import gpt.chat.Chat;
 import gpt.chat.FunctionalChat;
-import gpt.chat.ui.ChatGUIFactory;
-import gpt.models.Function;
->>>>>>> Stashed changes
 import gpt.utilities.DataGenerator;
 import models.CollectionOfIsbnModel;
 import models.Pet;
@@ -29,29 +23,6 @@ public class AppTest {
         PropertyUtility.loadProperties("src/test/resources/test.properties");
         gpt = new GPT(PropertyUtility.getProperty("token"));
         generator = new DataGenerator(gpt);
-    }
-
-    public static void main(String[] args) throws InterruptedException {
-        PropertyUtility.loadProperties("src/test/resources/test.properties");
-        gpt = new GPT(PropertyUtility.getProperty("token"));
-        generator = new DataGenerator(gpt);
-
-        int count = 0;
-        do {
-            try {
-                Pet pet = generator.instantiate(Pet.class, "id");
-                Assert.assertNull("The Id field is not null!", pet.getId());
-                break;
-            }
-            catch (FailedCallException e) {
-                count++;
-                gpt.log.warning("Too many requests to process. Waiting for GPT to be stable...");
-                Thread.sleep(15000);
-                if (count > 3)
-                    break;
-            }
-        }
-        while (true);
     }
 
     @Test
@@ -136,12 +107,6 @@ public class AppTest {
 
     }
 
-<<<<<<< Updated upstream
-=======
-    @Test
-    public void chatUITest() {
-        ChatGUIFactory.getChatGUI(ChatGUIFactory.Theme.getTheme(PropertyUtility.getProperty("theme")), gpt);
-    }
     
     public static void main(String[] args) {
         PropertyUtility.loadProperties("src/test/resources/test.properties");
@@ -153,5 +118,4 @@ public class AppTest {
         //Chat chat = new Chat(gpt);
         //chat.startChat();
     }
->>>>>>> Stashed changes
 }
