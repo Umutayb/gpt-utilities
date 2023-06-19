@@ -1,5 +1,12 @@
 import api_assured.exceptions.FailedCallException;
 import gpt.api.GPT;
+<<<<<<< Updated upstream
+=======
+import gpt.chat.Chat;
+import gpt.chat.FunctionalChat;
+import gpt.chat.ui.ChatGUIFactory;
+import gpt.models.Function;
+>>>>>>> Stashed changes
 import gpt.utilities.DataGenerator;
 import models.CollectionOfIsbnModel;
 import models.Pet;
@@ -129,4 +136,22 @@ public class AppTest {
 
     }
 
+<<<<<<< Updated upstream
+=======
+    @Test
+    public void chatUITest() {
+        ChatGUIFactory.getChatGUI(ChatGUIFactory.Theme.getTheme(PropertyUtility.getProperty("theme")), gpt);
+    }
+    
+    public static void main(String[] args) {
+        PropertyUtility.loadProperties("src/test/resources/test.properties");
+        GPT gpt = new GPT(PropertyUtility.getProperty("token"));
+
+        FunctionalChat functionalChat = new FunctionalChat(gpt, "gpt-3.5-turbo-0613");
+        functionalChat.startFunctionalChat();
+
+        //Chat chat = new Chat(gpt);
+        //chat.startChat();
+    }
+>>>>>>> Stashed changes
 }

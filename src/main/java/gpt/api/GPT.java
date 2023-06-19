@@ -3,6 +3,8 @@ package gpt.api;
 import api_assured.ApiUtilities;
 import api_assured.Caller;
 import api_assured.ServiceGenerator;
+import gpt.models.FunctionMessageModel;
+import gpt.models.FunctionModel;
 import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
 import lombok.Data;
@@ -47,6 +49,12 @@ public class GPT extends ApiUtilities {
     public MessageResponse sendMessage(MessageModel messageModel) {
         if (Caller.keepsLogs()) log.info("Messaging GPT model " + strUtils.highlighted(StringUtilities.Color.BLUE, messageModel.getModel()));
         Call<MessageResponse> messageCall = gptServices.sendMessage(messageModel);
-        return perform(messageCall, true , false);
+        return perform(messageCall, true , true);
+    }
+
+    public MessageResponse sendFunctionMessage(FunctionModel functionModel) {
+        if (Caller.keepsLogs()) log.info("Messaging GPT model " + strUtils.highlighted(StringUtilities.Color.BLUE, functionModel.getModel()));
+        Call<MessageResponse> messageCall = gptServices.sendFunctionMessage(functionModel);
+        return perform(messageCall, true, true);
     }
 }

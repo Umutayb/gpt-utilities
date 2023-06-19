@@ -3,11 +3,11 @@ package gpt.chat;
 import api_assured.Caller;
 import api_assured.exceptions.FailedCallException;
 import gpt.api.GPT;
-import gpt.models.Message;
-import gpt.models.MessageModel;
-import gpt.models.MessageResponse;
+import gpt.models.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.junit.Assert;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -38,6 +38,17 @@ public class Chat {
     public Chat(GPT gpt){
         this.gpt = gpt;
         this.modelName = "gpt-3.5-turbo";
+        this.temperature = 0.5;
+    }
+
+    public Chat(GPT gpt, List<Function> functions){
+        this.gpt = gpt;
+        this.modelName = "gpt-3.5-turbo";
+    }
+
+    public Chat(GPT gpt, String modelName) {
+        this.gpt = gpt;
+        this.modelName = modelName;
         this.temperature = 0.5;
     }
 
@@ -123,4 +134,5 @@ public class Chat {
         }
         while (true);
     }
+
 }

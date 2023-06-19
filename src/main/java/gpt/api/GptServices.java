@@ -1,5 +1,7 @@
 package gpt.api;
 
+import gpt.models.FunctionMessageModel;
+import gpt.models.FunctionModel;
 import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
 import retrofit2.Call;
@@ -21,4 +23,7 @@ interface GptServices {
      */
     @POST(VERSION_INFIX + CHAT_INFIX + COMPLETIONS_SUFFIX)
     Call<MessageResponse> sendMessage(@Body MessageModel messageModel);
+
+    @POST(VERSION_INFIX + CHAT_INFIX + COMPLETIONS_SUFFIX)
+    Call<MessageResponse> sendFunctionMessage(@Body FunctionModel functionModel);
 }
