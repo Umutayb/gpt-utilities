@@ -2,6 +2,7 @@ package gpt.chat.ui.theme;
 
 import api_assured.Caller;
 import gpt.api.GPT;
+import gpt.api.mongo.DBInteraction;
 import gpt.chat.ui.BufferAnimation;
 import gpt.chat.ui.ChatGUI;
 import gpt.chat.server.Server;
@@ -12,6 +13,8 @@ import lombok.Data;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
+import utils.PropertyUtility;
+
 import javax.swing.*;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
@@ -24,7 +27,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,6 +36,7 @@ public class SupportGUILight implements ChatGUI {
     private JButton sendButton;
     private JFrame supportPanel;
     private JPanel loadingAnimation = new BufferAnimation.AnimationPanel();
+    private DBInteraction DBInteraction = new DBInteraction();
     private JTextPane chatOverviewPanel = new JTextPane();
     private JTextArea messageInputPanel = new JTextArea();
     private String oldMsg;
@@ -51,6 +54,8 @@ public class SupportGUILight implements ChatGUI {
     private String responderName;
     private String userName;
     private String chatTitle;
+    private String message;
+    private List<String> methods = DBInteraction.getMethodFieldInfo("methodName");
 
     public void startServer(){
         Thread serverThread = new Thread(() -> {
@@ -141,7 +146,7 @@ public class SupportGUILight implements ChatGUI {
                 public void keyPressed(KeyEvent e) {
 
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                        sendMessage();
+                        sendMessage(Assistant.valueOf(PropertyUtility.getProperty("assistant", "chatGpt")));
                     }
 
                     // Get last message typed
@@ -161,7 +166,7 @@ public class SupportGUILight implements ChatGUI {
             });
 
             // Send button click action
-            sendButton.addActionListener(ae -> sendMessage());
+            sendButton.addActionListener(ae -> sendMessage(Assistant.valueOf(PropertyUtility.getProperty("assistant", "chatGpt"))));
 
             // Chat overview background color
             chatOverviewPanel.setBackground(Color.LIGHT_GRAY); //new Color(192, 192, 192);
@@ -211,12 +216,115 @@ public class SupportGUILight implements ChatGUI {
         }
     }
 
-    public void sendMessage() {
+    public enum Assistant {
+        chatGpt,
+        pickleibAssistant;
+    }
+
+    public void sendMessage(Assistant assistant) {
+        switch (assistant){
+            case chatGpt -> sendMessageToGPT();
+            case pickleibAssistant -> sendMessageToPickleib();
+        }
+    }
+
+    public void pickleibAssistantResponse() {
+        try {
+            MessageResponse messageResponse;
+
+            messageResponse = gpt.sendMessage(new MessageModel(modelName, messages, temperature));
+            messages.add(messageResponse.getChoices().get(0).getMessage());
+            String message = messageResponse.getChoices().get(0).getMessage().getContent();
+            output.println("<b><span style='color:#49984d'>" + responderName + ": </span></b>" + message); //HexCode
+        }
+        catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+            System.exit(0);
+        }
+    }
+
+    public void sendMessageToPickleib() {
+        try {
+            message = messageInputPanel.getText().trim();
+            if (message.equals("")) {return;}
+            if (oldMsg == null)
+                messages.add(new Message("system",
+                        "Strict to the instructions down below by any means: " +
+                                "\n" +
+                                "You are a chat assistant of open-source library called Pickleib. " +
+                                "Pickleib is an open source library and the source code can be found on https://github.com/Umutayb/Pickleib " +
+                                "Pickleib integrates with Cucumber, and its element acquisition and interaction methods can be used in Cucumber steps. " +
+                                "Based on the question, select one of the related methods given in the method list below " + "\n" +
+                                "Method List: " + "\n" + methods + "\n" +
+                                "Only at the beginning start the conversation exactly as: This is Pickleib Assistant. How can I assist you today?" +
+                                "Answer all the questions related to the Pickleib" +
+                                "If only user asks a question related to the method list, respond exactly as: 'Here are the related methods that i found, pick one and write back to me! \n <insert only the related method names from the method list here>'"
+                ));
+            oldMsg = message;
+
+            output.println("<b><span style='color:#c86730'>" + userName + ": </span></b>" + message);
+
+            for (String method:methods) {
+                if (message.contains(method)) {
+                    messages.add(new Message("system", "\n Explain the method and give a simple example. " +
+                            "\n If theres more then one implementation specify it. " +
+                            "If the given method name is not equals to one of the methods in the list, answer with the most relevant method or methods according to the related methods that you have. " + "\n" +
+                            "Respond as: 'I'm sorry, I couldn't find any method named \"<insert the desired method name>\" in the list of available methods. Here are the related methods that I found, you can pick one and ask me again if needed: \n <insert only the related method names here based on method list>' " + "\n"+
+                            "Please pick one and write back to me!" +
+                            "\n The method: " + "\n" +
+                            DBInteraction.getMethod(method)));
+                }
+            }
+            messages.add(new Message("user", message));
+
+            messageInputPanel.requestFocus();
+            messageInputPanel.setText(null);
+
+            messagePickleib();
+        }
+        catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+            System.exit(0);
+        }
+    }
+
+
+    public void messagePickleib() {
+        sendButton.setEnabled(false);
+        messageInputPanel.setEnabled(false);
+        loadingAnimation.setVisible(true);
+
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                pickleibAssistantResponse();
+                return null;
+            }
+        };
+
+        worker.addPropertyChangeListener(evt -> {
+            if (SwingWorker.StateValue.DONE == evt.getNewValue()) {
+                // you should also call get() on the worker allowing
+                // you to capture and handle all exceptions it might throw
+                messageInputPanel.setEnabled(true);
+                sendButton.setEnabled(true);
+                loadingAnimation.setVisible(false);
+            }
+        });
+
+        worker.execute();  // run the worker
+    }
+
+
+
+
+
+    public void sendMessageToGPT() {
         try {
             String message = messageInputPanel.getText().trim();
             if (message.equals("")) return;
             oldMsg = message;
-            output.println("<b><span style='color:#3079ab'>" + userName + ": </span></b>" + message); //HexCode
+            output.println("<b><span style='color:#c86730'>" + userName + ": </span></b>" + message);
 
             messages.add(new Message("user", message));
             messageInputPanel.requestFocus();
@@ -271,7 +379,7 @@ public class SupportGUILight implements ChatGUI {
                 );
             messages.add(messageResponse.getChoices().get(0).getMessage());
             String message = messageResponse.getChoices().get(0).getMessage().getContent();
-            output.println("<b><span style='color:#4d7358'>" + responderName + ": </span></b>" + message); //HexCode
+            output.println("<b><span style='color:#49984d'>" + responderName + ": </span></b>" + message); //HexCode
         }
         catch (Exception ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());

@@ -130,6 +130,6 @@ public class AppTest {
     public static void main(String[] args) {
         PropertyUtility.loadProperties("src/test/resources/test.properties");
         GPT gpt = new GPT(PropertyUtility.getProperty("token"));
-        ChatGUIFactory.getChatGUI(ChatGUIFactory.Theme.getTheme(PropertyUtility.getProperty("theme")), gpt);
+        ChatGUIFactory.getChatGUI(ChatGUIFactory.Theme.getTheme(PropertyUtility.getProperty("theme", "light")), gpt);
     }
 }

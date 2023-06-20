@@ -21,7 +21,6 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 @Data
 public class SupportGUIDark implements ChatGUI {
@@ -252,7 +251,7 @@ public class SupportGUIDark implements ChatGUI {
                 public void keyPressed(KeyEvent e) {
 
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                        sendMessage();
+                        sendMessageToGPT();
                     }
 
                     // Get last message typed
@@ -272,7 +271,7 @@ public class SupportGUIDark implements ChatGUI {
             });
 
             // Send button click action
-            sendButton.addActionListener(ae -> sendMessage());
+            sendButton.addActionListener(ae -> sendMessageToGPT());
 
             supportPanel.add(chatOverviewScrollPane);
             supportPanel.setVisible(true);
@@ -324,7 +323,7 @@ public class SupportGUIDark implements ChatGUI {
         }
     }
 
-    public void sendMessage() {
+    public void sendMessageToGPT() {
         try {
             String message = messageInputPanel.getText().trim();
             if (message.equals("")) return;
