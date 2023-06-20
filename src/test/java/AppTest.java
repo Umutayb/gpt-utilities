@@ -135,7 +135,7 @@ public class AppTest {
                 ChatGUIFactory.Theme.getTheme(PropertyUtility.getProperty("theme")),
                 gpt
         );
-        chat.setTemperature(Double.parseDouble(PropertyUtility.getProperty("temperature")));
+        chat.setTemperature(Double.parseDouble(PropertyUtility.getProperty("temperature", "0.5")));
         chat.start();
     }
 }

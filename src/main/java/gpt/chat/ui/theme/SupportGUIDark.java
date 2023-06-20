@@ -276,7 +276,7 @@ public class SupportGUIDark implements ChatGUI {
                 public void keyPressed(KeyEvent e) {
 
                     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                        sendMessageToGPT();
+                        sendMessage();
                     }
 
                     // Get last message typed
@@ -296,7 +296,7 @@ public class SupportGUIDark implements ChatGUI {
             });
 
             // Send button click action
-            sendButton.addActionListener(ae -> sendMessageToGPT());
+            sendButton.addActionListener(ae -> sendMessage());
 
             supportPanel.add(chatOverviewScrollPane);
             supportPanel.setVisible(true);
@@ -348,7 +348,7 @@ public class SupportGUIDark implements ChatGUI {
         }
     }
 
-    public void sendMessageToGPT() {
+    public void sendMessage() {
         try {
             String message = messageInputPanel.getText().trim();
             if (message.equals("")) return;

@@ -31,7 +31,7 @@ public class Server {
             }
         };
         //System.out.println("Port 12345 is now open.");
-        log.info("Initializing GPT...");
+        log.info("Initializing...");
 
         do {
             // accepts a new client
@@ -45,6 +45,7 @@ public class Server {
 
             // create a new thread for newUser incoming messages handling
             new Thread(new UserHandler(this, newUser)).start();
+            log.success("Connected!");
         }
         while (true);
     }
