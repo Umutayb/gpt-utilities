@@ -227,8 +227,8 @@ public class SupportGUIDark implements ChatGUI {
     }
 
     public void setFonts() {
-        String fontfamily = "SansSerif";
-        Font font = new Font(fontfamily, Font.PLAIN, 14);
+        String fontFamily = "SansSerif";
+        Font font = new Font(fontFamily, Font.PLAIN, 14);
         chatOverviewPanel.setFont(font);
         messageInputPanel.setFont(font);
         messageInputPanel.setLineWrap(true);
