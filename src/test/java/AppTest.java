@@ -1,5 +1,6 @@
 import api_assured.exceptions.FailedCallException;
 import gpt.api.GPT;
+import gpt.chat.ui.ChatGUI;
 import gpt.chat.ui.ChatGUIFactory;
 import gpt.utilities.DataGenerator;
 import models.CollectionOfIsbnModel;
@@ -130,6 +131,11 @@ public class AppTest {
     public static void main(String[] args) {
         PropertyUtility.loadProperties("src/test/resources/test.properties");
         GPT gpt = new GPT(PropertyUtility.getProperty("token"));
-        ChatGUIFactory.getChatGUI(ChatGUIFactory.Theme.getTheme(PropertyUtility.getProperty("theme", "light")), gpt);
+        ChatGUI chat = ChatGUIFactory.getChatGUI(
+                ChatGUIFactory.Theme.getTheme(PropertyUtility.getProperty("theme")),
+                gpt
+        );
+        chat.setTemperature(Double.parseDouble(PropertyUtility.getProperty("temperature")));
+        chat.start();
     }
 }

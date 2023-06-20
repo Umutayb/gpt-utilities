@@ -39,7 +39,7 @@ public class SupportGUIDark implements ChatGUI {
     private BufferedReader input;
     private PrintWriter output;
     private Socket server;
-    private final List<Message> messages = new ArrayList<>();
+    private List<Message> messages = new ArrayList<>();
     private String modelName;
     private Double temperature;
     private GPT gpt;
@@ -57,6 +57,36 @@ public class SupportGUIDark implements ChatGUI {
         serverThread.start();
     }
 
+    public SupportGUIDark setTemperature(double temperature){
+        this.temperature = temperature;
+        return this;
+    }
+
+    public SupportGUIDark setModelName(String modelName){
+        this.modelName = modelName;
+        return this;
+    }
+
+    public SupportGUIDark setResponderName(String responderName){
+        this.responderName = responderName;
+        return this;
+    }
+
+    public SupportGUIDark setChatTitle(String chatTitle){
+        this.chatTitle = chatTitle;
+        return this;
+    }
+
+    public SupportGUIDark setUserName(String userName){
+        this.userName = userName;
+        return this;
+    }
+
+    public SupportGUIDark setMessages(List<Message> messages){
+        this.messages = messages;
+        return this;
+    }
+
     @SuppressWarnings("unused")
     public SupportGUIDark(GPT gpt) {
         this.modelName = "gpt-3.5-turbo";
@@ -67,8 +97,6 @@ public class SupportGUIDark implements ChatGUI {
         this.chatTitle = "Chat";
 
         Caller.keepLogs(false);
-        startServer();
-        startSupportGUI();
     }
 
     @SuppressWarnings("unused")
@@ -89,8 +117,6 @@ public class SupportGUIDark implements ChatGUI {
         this.userName = userName;
 
         Caller.keepLogs(false);
-        startServer();
-        startSupportGUI();
         for (String prompt:prompts) messages.add(new Message("system", prompt));
     }
 
@@ -244,7 +270,6 @@ public class SupportGUIDark implements ChatGUI {
             // Send button
             sendButton = new JButton("Send");
             sendButton.setBounds(580, 346, 105, 108);
-
 
             messageInputPanel.addKeyListener(new KeyAdapter() {
                 // Send message on Enter

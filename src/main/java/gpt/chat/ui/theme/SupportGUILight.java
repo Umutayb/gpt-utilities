@@ -47,7 +47,7 @@ public class SupportGUILight implements ChatGUI {
     private BufferedReader input;
     private PrintWriter output;
     private Socket server;
-    private final List<Message> messages = new ArrayList<>();
+    private List<Message> messages = new ArrayList<>();
     private String modelName;
     private Double temperature;
     private GPT gpt;
@@ -65,8 +65,34 @@ public class SupportGUILight implements ChatGUI {
         serverThread.start();
     }
 
-    public void buffer() {
+    public SupportGUILight setTemperature(double temperature){
+        this.temperature = temperature;
+        return this;
+    }
 
+    public SupportGUILight setModelName(String modelName){
+        this.modelName = modelName;
+        return this;
+    }
+
+    public SupportGUILight setResponderName(String responderName){
+        this.responderName = responderName;
+        return this;
+    }
+
+    public SupportGUILight setChatTitle(String chatTitle){
+        this.chatTitle = chatTitle;
+        return this;
+    }
+
+    public SupportGUILight setUserName(String userName){
+        this.userName = userName;
+        return this;
+    }
+
+    public SupportGUILight setMessages(List<Message> messages){
+        this.messages = messages;
+        return this;
     }
 
     @SuppressWarnings("unused")
@@ -79,8 +105,6 @@ public class SupportGUILight implements ChatGUI {
         this.chatTitle = "Chat";
 
         Caller.keepLogs(false);
-        startServer();
-        startSupportGUI();
     }
 
     @SuppressWarnings("unused")
@@ -101,8 +125,6 @@ public class SupportGUILight implements ChatGUI {
         this.userName = userName;
 
         Caller.keepLogs(false);
-        startServer();
-        startSupportGUI();
         for (String prompt:prompts) messages.add(new Message("system", prompt));
     }
 
@@ -401,7 +423,7 @@ public class SupportGUILight implements ChatGUI {
         }
     }
 
-    public static List<String> extractCodeBlocks(String input) {
+    static List<String> extractCodeBlocks(String input) {
         List<String> codeBlocks = new ArrayList<>();
         Pattern pattern = Pattern.compile("```([\\s\\S]*?)```");
         Matcher matcher = pattern.matcher(input);
@@ -415,7 +437,7 @@ public class SupportGUILight implements ChatGUI {
         return codeBlocks;
     }
 
-    public static void extractCodeBlockss(String input) {
+    static void extractCodeBlockss(String input) {
         String[] parts = input.split("(?<=```)|(?=```)");
         List<String> codeBlocks = extractCodeBlocks(input);
         for (String part: parts) {
