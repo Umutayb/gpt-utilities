@@ -6,7 +6,7 @@
 
   <groupId>io.github.umutayb</groupId>
   <artifactId>gpt-utilities</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>GPT Utilities</name>
@@ -80,6 +80,11 @@
       <version>${jackson.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.fifesoft</groupId>
+      <artifactId>rsyntaxtextarea</artifactId>
+      <version>3.1.2</version>
+    </dependency>
   </dependencies>
 
   <distributionManagement>

@@ -1,5 +1,7 @@
 import api_assured.exceptions.FailedCallException;
 import gpt.api.GPT;
+import gpt.chat.ui.ChatGUI;
+import gpt.chat.ui.ChatGUIFactory;
 import gpt.utilities.DataGenerator;
 import models.CollectionOfIsbnModel;
 import models.Pet;
@@ -24,11 +26,8 @@ public class AppTest {
         generator = new DataGenerator(gpt);
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        PropertyUtility.loadProperties("src/test/resources/test.properties");
-        gpt = new GPT(PropertyUtility.getProperty("token"));
-        generator = new DataGenerator(gpt);
-
+    @Test
+    public void dataGeneratorTest() throws InterruptedException {
         int count = 0;
         do {
             try {
@@ -129,4 +128,14 @@ public class AppTest {
 
     }
 
+    public static void main(String[] args) {
+        PropertyUtility.loadProperties("src/test/resources/test.properties");
+        GPT gpt = new GPT(PropertyUtility.getProperty("token"));
+        ChatGUI chat = ChatGUIFactory.getChatGUI(
+                ChatGUIFactory.Theme.getTheme(PropertyUtility.getProperty("theme")),
+                gpt
+        );
+        chat.setTemperature(Double.parseDouble(PropertyUtility.getProperty("temperature", "0.5")));
+        chat.start();
+    }
 }
