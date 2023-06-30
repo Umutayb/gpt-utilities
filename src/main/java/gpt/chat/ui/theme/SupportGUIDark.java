@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class SupportGUIDark implements ChatGUI {
-    private JButton sendButton;
+public class SupportGUIDark implements ChatGUI {         //TODO: Make styling dynamically read from a json
+    private JButton sendButton = new JButton("Send");
     private JFrame supportPanel;
     private JPanel loadingAnimation = new BufferAnimation.AnimationPanel();
     private JScrollPane chatOverviewScrollPane;
@@ -244,6 +244,7 @@ public class SupportGUIDark implements ChatGUI {
     }
 
     public void startSupportGUI() {
+        //TODO: Modularise this method
         try {
             supportPanel = new JFrame(chatTitle);
             supportPanel.getContentPane().setLayout(null);
@@ -268,7 +269,6 @@ public class SupportGUIDark implements ChatGUI {
             messageInputScrollPane.setBounds(15, 345, 555, 110);
 
             // Send button
-            sendButton = new JButton("Send");
             sendButton.setBounds(580, 346, 105, 108);
 
             messageInputPanel.addKeyListener(new KeyAdapter() {
