@@ -132,7 +132,7 @@ public class AppTest {
         PropertyUtility.loadProperties("src/test/resources/test.properties");
         GPT gpt = new GPT(PropertyUtility.getProperty("token"));
         ChatGUI chat = ChatGUIFactory.getChatGUI(
-                ChatGUIFactory.Theme.getTheme(PropertyUtility.getProperty("theme")),
+                ChatGUIFactory.Theme.light,
                 gpt
         );
         chat.setTemperature(Double.parseDouble(PropertyUtility.getProperty("temperature", "0.5")));
