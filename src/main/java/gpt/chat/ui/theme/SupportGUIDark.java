@@ -441,7 +441,7 @@ public class SupportGUIDark implements ChatGUI {         //TODO: Make styling dy
                         if (message.contains("```")||message.contains("'''")) isBLock = !isBLock;
                         appendToPane(chatOverviewPanel, message, isBLock);
                     }
-                    System.out.println("MESSAGE:\n" + message);
+                    //System.out.println("MESSAGE:\n" + message);
 
                 }
                 catch (IOException ex) {
