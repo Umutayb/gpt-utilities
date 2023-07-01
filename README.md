@@ -61,18 +61,20 @@ public class GptSteps {
 
 ### GUI
 ![DarkMode.png](src%2Ftest%2Fresources%2Ffile%2FDarkMode.png)
+
 **To use the Graphical User Interface**:
+
 ````java
-public static void main(String[] args) {
+    public static void main(String[] args) {
         PropertyUtility.loadProperties("src/test/resources/test.properties");
         GPT gpt = new GPT(PropertyUtility.getProperty("token"));
         ChatGUI chat = ChatGUIFactory.getChatGUI(
-        ChatGUIFactory.Theme.light,
-        gpt
+                ChatGUIFactory.Theme.light,
+                gpt
         );
         chat.setTemperature(Double.parseDouble(PropertyUtility.getProperty("temperature", "0.5")));
         chat.start();
-        }
+    }
  ````
 - GPT token needs to be determined on property file
 - Theme options can be adjustable (dark/light)
