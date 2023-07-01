@@ -2,7 +2,7 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.umutayb/gpt-utilities?color=brightgreen&label=gpt-utilities)](https://mvnrepository.com/artifact/io.github.umutayb/gpt-utilities/latest)
 
-This library provides seamless integration of ChatGPT API in Java.
+This library enables seamless integration of OpenAI's ChatGPT API in your Java project.
 
 ## Features
 
