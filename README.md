@@ -51,10 +51,9 @@ public class GptSteps {
     public void sendPrompt(List<Message> messages) {
         MessageModel messageModel = new MessageModel(gptModel, messages);
         MessageResponse messageResponse = gpt.sendMessage(messageModel);
-        gpt.log.new Info("Waiting for the answer");
-        gpt.log.new Info(messageResponse.getChoices().get(0).getMessage().getContent());
+        gpt.log.info("Waiting for the answer");
+        gpt.log.info(messageResponse.getChoices().get(0).getMessage().getContent());
     }
-
 }
  ````
  ___
