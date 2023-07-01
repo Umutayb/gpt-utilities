@@ -73,6 +73,7 @@ import gpt.utilities.DataGenerator;
 import utils.PropertyUtility;
 
 public class Chat {
+
     public static void main(String[] args) {
         PropertyUtility.loadProperties("src/test/resources/test.properties");
         GPT gpt = new GPT(PropertyUtility.getProperty("token"));
