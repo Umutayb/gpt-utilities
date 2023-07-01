@@ -60,7 +60,7 @@ public class GptSteps {
  ___
 
 ### GUI
-
+![Screen Shot 2023-07-01 at 15.49.28.png](..%2F..%2F..%2FDesktop%2FScreen%20Shot%202023-07-01%20at%2015.49.28.png)
 **To use the Graphical User Interface**:
 ````java
 public static void main(String[] args) {
