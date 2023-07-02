@@ -12,6 +12,7 @@ import lombok.Data;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
+import utils.TextParser;
 
 import javax.swing.*;
 import javax.swing.text.html.HTMLDocument;
@@ -29,29 +30,30 @@ import java.util.List;
 
 @Data
 public class SupportGUILight implements ChatGUI {
-    private JButton sendButton;
-    private JFrame supportPanel;
-    private JPanel loadingAnimation = new BufferAnimation.AnimationPanel();
-    JScrollPane chatOverviewScrollPane;
-    private JTextPane chatOverviewPanel = new JTextPane();
-    private JTextArea messageInputPanel = new JTextArea();
-    private JScrollPane messageInputScrollPane;
-    private String oldMsg;
-    private Thread read;
-    private String serverName;
-    private int PORT;
-    private String name;
-    private BufferedReader input;
-    private PrintWriter output;
-    private Socket server;
-    private List<Message> messages = new ArrayList<>();
-    private String modelName;
-    private Double temperature;
-    private GPT gpt;
-    private String responderName;
-    private String userName;
-    private String chatTitle;
-    private String message;
+    public JTextPane chatOverviewPanel = new JTextPane();
+    public JTextArea messageInputPanel = new JTextArea();
+    public List<Message> messages = new ArrayList<>();
+    public TextParser textParser = new TextParser();
+    public JScrollPane chatOverviewScrollPane;
+    public JScrollPane messageInputScrollPane;
+    public JPanel loadingAnimation;
+    public BufferedReader input;
+    public String responderName;
+    public JFrame supportPanel;
+    public PrintWriter output;
+    public Double temperature;
+    public JTextPane codeView;
+    public JButton sendButton;
+    public String serverName;
+    public String modelName;
+    public String chatTitle;
+    public String userName;
+    public Socket server;
+    public String oldMsg;
+    public String name;
+    public Thread read;
+    public int PORT;
+    public GPT gpt;
 
     public void startServer(){
         Thread serverThread = new Thread(() -> {
