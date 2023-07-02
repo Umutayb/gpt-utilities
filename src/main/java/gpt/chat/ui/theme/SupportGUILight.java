@@ -281,7 +281,7 @@ public class SupportGUILight implements ChatGUI {
         supportPanel.repaint();
         //Adjusts fonts/colors
         setUpColor(Color.WHITE, Color.WHITE);
-        setUpFont("OpenSans", 14);
+        setUpFont("SansSerif", 14);
     }
 
 
