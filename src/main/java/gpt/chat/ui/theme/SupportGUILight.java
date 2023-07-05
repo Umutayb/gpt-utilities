@@ -12,7 +12,7 @@ import lombok.Data;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
-
+import utils.TextParser;
 import javax.swing.*;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
@@ -26,32 +26,33 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Data
 public class SupportGUILight implements ChatGUI {
-    private JButton sendButton;
-    private JFrame supportPanel;
-    private JPanel loadingAnimation = new BufferAnimation.AnimationPanel();
-    private JTextPane chatOverviewPanel = new JTextPane();
-    private JTextArea messageInputPanel = new JTextArea();
-    private String oldMsg;
-    private Thread read;
-    private String serverName;
-    private int PORT;
-    private String name;
-    private BufferedReader input;
-    private PrintWriter output;
-    private Socket server;
-    private List<Message> messages = new ArrayList<>();
-    private String modelName;
-    private Double temperature;
-    private GPT gpt;
-    private String responderName;
-    private String userName;
-    private String chatTitle;
-    private String message;
+    public JTextPane chatOverviewPanel = new JTextPane();
+    public JTextArea messageInputPanel = new JTextArea();
+    public List<Message> messages = new ArrayList<>();
+    public TextParser textParser = new TextParser();
+    public JScrollPane chatOverviewScrollPane;
+    public JScrollPane messageInputScrollPane;
+    public JPanel loadingAnimation;
+    public BufferedReader input;
+    public String responderName;
+    public JFrame supportPanel;
+    public PrintWriter output;
+    public Double temperature;
+    public JTextPane codeView;
+    public JButton sendButton;
+    public String serverName;
+    public String modelName;
+    public String chatTitle;
+    public String userName;
+    public Socket server;
+    public String oldMsg;
+    public String name;
+    public Thread read;
+    public int PORT;
+    public GPT gpt;
 
     public void startServer(){
         Thread serverThread = new Thread(() -> {
@@ -124,80 +125,117 @@ public class SupportGUILight implements ChatGUI {
         for (String prompt:prompts) messages.add(new Message("system", prompt));
     }
 
-    public void startSupportGUI() {
+    public void setUpFont(String fontFamily, int fontSize) {
+        Font font = new Font(fontFamily, Font.PLAIN, fontSize);
+        chatOverviewPanel.setFont(font);
+        chatOverviewPanel.setEditable(false);
+        messageInputPanel.setFont(font);
+        messageInputPanel.setLineWrap(true);
+        sendButton.setFont(font);
+
+    }
+
+    public void setUpColor(Color primary, Color secondary) {
+        chatOverviewPanel.setBackground(primary);
+        supportPanel.setBackground(secondary);
+    }
+
+    public void lookAnFeel() {
         try {
-            //Font
-            String fontfamily = "OpenSans";
-            Font font = new Font(fontfamily, Font.PLAIN, 15);
-            supportPanel = new JFrame(chatTitle);
-            supportPanel.getContentPane().setLayout(null);
-            supportPanel.setSize(700, 500);
-            supportPanel.setResizable(false);
-            supportPanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    public void setUpSupportPanel() {
+        supportPanel = new JFrame(chatTitle);
+        supportPanel.getContentPane().setLayout(null);
+        supportPanel.setSize(700, 500);
+        supportPanel.setResizable(false);
+        supportPanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        supportPanel.setVisible(true);
+    }
 
-            // Chat panel
-            chatOverviewPanel.setBounds(25, 25, 650, 320);
-            chatOverviewPanel.setFont(font);
-            chatOverviewPanel.setMargin(new Insets(6, 6, 6, 6));
-            chatOverviewPanel.setEditable(false);
-            JScrollPane chatOverviewScrollPanel = new JScrollPane(chatOverviewPanel);
-            chatOverviewScrollPanel.setBounds(25, 25, 650, 320);
+    public void addToSupportPanel() {
+        supportPanel.add(setUpChatOverviewScrollPane());
+        supportPanel.add(sendButton, JLayeredPane.DEFAULT_LAYER);
+        // Field message user input
+        supportPanel.add(setUpMessageInputScrollPane(setUpMessageInputPanel()), JLayeredPane.DEFAULT_LAYER);
+        supportPanel.setGlassPane(setUpLoadAnimation());
+    }
 
-            chatOverviewPanel.setContentType("text/html");
-            chatOverviewPanel.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+    public JTextPane setUpChatOverviewPanel() {
+        chatOverviewPanel.setBounds(25, 25, 650, 320);
+        chatOverviewPanel.setMargin(new Insets(6, 6, 6, 6));
+        chatOverviewPanel.setContentType("text/html");
+        chatOverviewPanel.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+        return chatOverviewPanel;
+    }
 
-            // Field message user input
-            messageInputPanel.setBounds(0, 350, 290, 50);
-            messageInputPanel.setFont(font);
-            messageInputPanel.setMargin(new Insets(6, 6, 6, 6));
-            messageInputPanel.setLineWrap(true);
-            final JScrollPane messageInputScrollPanel = new JScrollPane(messageInputPanel);
-            messageInputScrollPanel.setBounds(25, 350, 540, 110);
+    public JScrollPane setUpChatOverviewScrollPane() {
+        chatOverviewScrollPane = new JScrollPane(setUpChatOverviewPanel());
+        chatOverviewScrollPane.setBounds(25, 25, 650, 320);
+        chatOverviewScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        return chatOverviewScrollPane;
+    }
 
-            // Send button
-            sendButton = new JButton("Send");
-            sendButton.setFont(font);
-            sendButton.setBounds(575, 350, 100, 105);
+    public JTextArea setUpMessageInputPanel(){
+        messageInputPanel.setBounds(0, 350, 290, 50);
+        messageInputPanel.setMargin(new Insets(6, 6, 6, 6));
+        return messageInputPanel;
+    }
 
-            messageInputPanel.addKeyListener(new KeyAdapter() {
-                // Send message on Enter
-                public void keyPressed(KeyEvent e) {
+    public JScrollPane setUpMessageInputScrollPane(JTextArea messageInputPanel){
+        messageInputScrollPane = new JScrollPane(messageInputPanel);
+        messageInputScrollPane.setBounds(25, 350, 540, 110);
+        return messageInputScrollPane;
+    }
 
-                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                        sendMessage();
-                    }
+    public JButton setUpSendButton() {
+        sendButton = new JButton("Send");
+        sendButton.setBounds(575, 350, 100, 105);
+        sendButton.addActionListener(ae -> sendMessage());
+        return sendButton;
+    }
 
-                    // Get last message typed
-                    if (e.getKeyCode() == KeyEvent.VK_UP) {
-                        String currentMessage = messageInputPanel.getText().trim();
-                        messageInputPanel.setText(oldMsg);
-                        oldMsg = currentMessage;
-                    }
+    public JPanel setUpLoadAnimation() {
+        loadingAnimation = new BufferAnimation.AnimationPanel();
+        loadingAnimation.setLocation(0,0);
+        loadingAnimation.setBounds(supportPanel.getBounds());
+        loadingAnimation.setPreferredSize(supportPanel.getPreferredSize());
+        loadingAnimation.setVisible(false);
+        return loadingAnimation;
+    }
 
-                    if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                        String currentMessage = messageInputPanel.getText().trim();
-                        messageInputPanel.setText(oldMsg);
-                        oldMsg = currentMessage;
-                    }
+    public void setUpKeyListeners() {
+        setUpMessageInputPanel().addKeyListener(new KeyAdapter() {
+            // Send message on Enter
+            public void keyPressed(KeyEvent e) {
 
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    sendMessage();
                 }
-            });
 
-            // Send button click action
-            sendButton.addActionListener(ae -> sendMessage());
+                // Get last message typed
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    String currentMessage = messageInputPanel.getText().trim();
+                    messageInputPanel.setText(oldMsg);
+                    oldMsg = currentMessage;
+                }
 
-            // Chat overview background color
-            chatOverviewPanel.setBackground(Color.LIGHT_GRAY); //new Color(192, 192, 192);
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    String currentMessage = messageInputPanel.getText().trim();
+                    messageInputPanel.setText(oldMsg);
+                    oldMsg = currentMessage;
+                }
 
-            supportPanel.add(chatOverviewScrollPanel);
-            supportPanel.setVisible(true);
+            }
+        });
+    }
 
-            // Chat panel initial message
-            appendToPane(chatOverviewPanel,
-                    "<b>Welcome to " + chatTitle + ", please ask your questions!</b>", false
-            );
-
-            // Default server specifications
+    public void setUpServer() {
+        try {
             name = "User";
             String port = "12345";
             serverName = "localhost";
@@ -206,32 +244,41 @@ public class SupportGUILight implements ChatGUI {
             server = new Socket(serverName, PORT);
             input = new BufferedReader(new InputStreamReader(server.getInputStream()));
             output = new PrintWriter(server.getOutputStream(), true);
-
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-                ex.printStackTrace();
-            }
-
-            // Create new read thread
-            read = new Read();
-            read.start();
-
-            supportPanel.add(sendButton, JLayeredPane.DEFAULT_LAYER);
-            supportPanel.add(messageInputScrollPanel, JLayeredPane.DEFAULT_LAYER);
-            supportPanel.revalidate();
-            supportPanel.repaint();
-            chatOverviewPanel.setBackground(Color.WHITE); //new Color(192, 192, 192);
-
-            loadingAnimation.setLocation(0,0);
-            loadingAnimation.setBounds(supportPanel.getBounds());
-            //loadingAnimation.setPreferredSize(supportPanel.getPreferredSize());
-            loadingAnimation.setVisible(false);
-            supportPanel.setGlassPane(loadingAnimation);
         }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        catch (IOException e) {throw new RuntimeException(e);}
+    }
+
+    public void createReadThread() {
+        read = new Read();
+        read.start();
+    }
+
+    public void startSupportGUI() {
+        setUpSupportPanel();
+        //Chat panel
+        setUpChatOverviewPanel();
+        //KeyListeners
+        setUpKeyListeners();
+        //Send button action
+        setUpSendButton();
+        //Placings to main panel
+        addToSupportPanel();
+        //Chat panel initial message
+        appendToPane(chatOverviewPanel,
+                "<b>Welcome to " + chatTitle + ", please ask your questions!</b>", false
+        );
+        // Default server specifications
+        setUpServer();
+        //Sets look and feel
+        lookAnFeel();
+        //Create new read thread
+        createReadThread();
+        //Revalidates/repaints main panel
+        supportPanel.revalidate();
+        supportPanel.repaint();
+        //Adjusts fonts/colors
+        setUpColor(Color.WHITE, Color.WHITE);
+        setUpFont("SansSerif", 14);
     }
 
 

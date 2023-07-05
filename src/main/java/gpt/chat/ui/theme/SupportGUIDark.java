@@ -23,31 +23,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class SupportGUIDark implements ChatGUI {         //TODO: Make styling dynamically read from a json
-    private JButton sendButton = new JButton("Send");
-    private JFrame supportPanel;
-    private JPanel loadingAnimation = new BufferAnimation.AnimationPanel();
-    private JScrollPane chatOverviewScrollPane;
-    private JScrollPane messageInputScrollPane;
-    private JTextPane chatOverviewPanel = new JTextPane();
-    private JTextArea messageInputPanel = new JTextArea();
-    private String oldMsg;
-    private Thread read;
-    private String serverName;
-    private int PORT;
-    private String name;
-    private BufferedReader input;
-    private PrintWriter output;
-    private Socket server;
-    private List<Message> messages = new ArrayList<>();
-    private String modelName;
-    private Double temperature;
-    private GPT gpt;
-    private String responderName;
-    private String userName;
-    private String chatTitle;
-    private TextParser textParser = new TextParser();
-    private JTextPane codeView;
+public class SupportGUIDark implements ChatGUI {  //TODO: Make styling dynamically read from a json
+    public JTextPane chatOverviewPanel = new JTextPane();
+    public JTextArea messageInputPanel = new JTextArea();
+    public List<Message> messages = new ArrayList<>();
+    public TextParser textParser = new TextParser();
+    public JScrollPane chatOverviewScrollPane;
+    public JScrollPane messageInputScrollPane;
+    public JPanel loadingAnimation;
+    public BufferedReader input;
+    public String responderName;
+    public JFrame supportPanel;
+    public PrintWriter output;
+    public Double temperature;
+    public JTextPane codeView;
+    public JButton sendButton;
+    public String serverName;
+    public String modelName;
+    public String chatTitle;
+    public String userName;
+    public Socket server;
+    public String oldMsg;
+    public String name;
+    public Thread read;
+    public int PORT;
+    public GPT gpt;
 
     public void startServer(){
         Thread serverThread = new Thread(() -> {
@@ -120,38 +120,37 @@ public class SupportGUIDark implements ChatGUI {         //TODO: Make styling dy
         for (String prompt:prompts) messages.add(new Message("system", prompt));
     }
 
-    public void setColors() {
-        supportPanel.getContentPane().setBackground(new Color(46 , 46 ,52));
-        supportPanel.setBackground(new Color(46 , 46 ,52));
+    public void setUpColors(Color primary, Color secondary) {
+        supportPanel.getContentPane().setBackground(primary);
+        supportPanel.setBackground(primary);
 
-        chatOverviewPanel.setBackground(new Color(67 , 69 ,74));
-        messageInputPanel.setBackground(new Color(67 , 69 ,74));
+        chatOverviewPanel.setBackground(secondary);
+        messageInputPanel.setBackground(secondary);
 
-        sendButton.setBackground(new Color(67 , 69 ,74));
+        sendButton.setBackground(secondary);
         sendButton.setOpaque(true);
         sendButton.setBorderPainted(false);
+
+        chatOverviewScrollPane.setBackground(primary);
+        chatOverviewScrollPane.setBorder(BorderFactory.createLineBorder(primary));
+        chatOverviewScrollPane.getVerticalScrollBar().setBackground(secondary);
+        chatOverviewScrollPane.getHorizontalScrollBar().setBackground(secondary);
+
+        messageInputScrollPane.setBackground(primary);
+        messageInputScrollPane.setBorder(BorderFactory.createLineBorder(primary));
+        messageInputScrollPane.getHorizontalScrollBar().setBackground(secondary);
+        messageInputScrollPane.getVerticalScrollBar().setBackground(secondary);
+
     }
 
-    public void setScrollPane() {
-        chatOverviewScrollPane.setBackground(new Color(46 , 46 ,52));
-        chatOverviewScrollPane.setBorder(BorderFactory.createLineBorder(new Color(46 , 46 ,52)));
-        chatOverviewScrollPane.getVerticalScrollBar().setBackground(new Color(67 , 69 ,74));
-        chatOverviewScrollPane.getHorizontalScrollBar().setBackground(new Color(67 , 69 ,74));
-
-        messageInputScrollPane.setBackground(new Color(46 , 46 ,52));
-        messageInputScrollPane.setBorder(BorderFactory.createLineBorder(new Color(46 , 46 ,52)));
-        messageInputScrollPane.getHorizontalScrollBar().setBackground(new Color(67 , 69 ,74));
-        messageInputScrollPane.getVerticalScrollBar().setBackground(new Color(67 , 69 ,74));
-
+    public void setUpScrollBars(Color thumbColour, Color trackColour) {
         chatOverviewScrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-            private static final Color THUMB_COLOR = new Color(46 , 46 ,52);
-            private static final Color TRACK_COLOR = new Color(67 , 69 ,74);
 
             @Override
             protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(THUMB_COLOR);
+                g2.setColor(thumbColour);
                 g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
                 g2.dispose();
             }
@@ -160,7 +159,7 @@ public class SupportGUIDark implements ChatGUI {         //TODO: Make styling dy
             protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(TRACK_COLOR);
+                g2.setColor(trackColour);
                 g2.fillRoundRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height, 10, 10);
                 g2.dispose();
             }
@@ -185,14 +184,12 @@ public class SupportGUIDark implements ChatGUI {         //TODO: Make styling dy
         });
 
         messageInputScrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-            private static final Color THUMB_COLOR = new Color(46 , 46 ,52);
-            private static final Color TRACK_COLOR = new Color(67 , 69 ,74);
 
             @Override
             protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(THUMB_COLOR);
+                g2.setColor(thumbColour);
                 g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
                 g2.dispose();
             }
@@ -201,7 +198,7 @@ public class SupportGUIDark implements ChatGUI {         //TODO: Make styling dy
             protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(TRACK_COLOR);
+                g2.setColor(trackColour);
                 g2.fillRoundRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height, 10, 10);
                 g2.dispose();
             }
@@ -226,89 +223,77 @@ public class SupportGUIDark implements ChatGUI {         //TODO: Make styling dy
         });
     }
 
-    public void setFonts() {
-        String fontFamily = "SansSerif";
-        Font font = new Font(fontFamily, Font.PLAIN, 14);
+    public void setUpFonts(String fontFamily, Color fontColor, Color selectionColor, int fontSize) {
+        Font font = new Font(fontFamily, Font.PLAIN, fontSize);
+        supportPanel.setForeground(fontColor);
         chatOverviewPanel.setFont(font);
+        chatOverviewPanel.setForeground(fontColor);
+        chatOverviewPanel.setSelectionColor(selectionColor);
+        chatOverviewPanel.setSelectedTextColor(fontColor);
+        chatOverviewPanel.setEditable(false);
         messageInputPanel.setFont(font);
         messageInputPanel.setLineWrap(true);
+        messageInputPanel.setForeground(fontColor);
+        messageInputPanel.setSelectionColor(selectionColor);
+        messageInputPanel.setSelectedTextColor(fontColor);
         sendButton.setFont(font);
-
-        //Font Color
-        supportPanel.setForeground(new Color(222, 221, 228));
-        chatOverviewPanel.setForeground(new Color(222, 221, 228));
-        messageInputPanel.setForeground(new Color(222, 221, 228));
-        sendButton.setForeground(new Color(222, 221, 228));
-
-        chatOverviewPanel.setEditable(false);
+        sendButton.setForeground(fontColor);
     }
 
-    public void startSupportGUI() {
-        //TODO: Modularise this method
+    public void lookAndFeel() {
         try {
-            supportPanel = new JFrame(chatTitle);
-            supportPanel.getContentPane().setLayout(null);
-            supportPanel.setSize(700, 500);
-            supportPanel.setResizable(false);
-            supportPanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            ex.printStackTrace();
+        }
+    }
 
-            // Chat panel
-            chatOverviewPanel.setBounds(15, 15, 665, 320);
-            chatOverviewPanel.setMargin(new Insets(6, 6, 6, 6));
-            chatOverviewScrollPane = new JScrollPane(chatOverviewPanel);
-            chatOverviewScrollPane.setBounds(15, 15, 670, 320);
-            chatOverviewScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    public void setUpSupportPanel() {
+        supportPanel = new JFrame(chatTitle);
+        supportPanel.getContentPane().setLayout(null);
+        supportPanel.setSize(700, 500);
+        supportPanel.setResizable(false);
+        supportPanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        supportPanel.setVisible(true);
+    }
 
-            chatOverviewPanel.setContentType("text/html");
-            chatOverviewPanel.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+    public void addToSupportPanel() {
+        supportPanel.add(setUpChatOverviewScrollPane());
+        supportPanel.add(setUpSendButton(), JLayeredPane.DEFAULT_LAYER);
+        // Field message user input
+        supportPanel.add(setUpMessageInputScrollPane(setUpMessageInputPanel()), JLayeredPane.DEFAULT_LAYER);
+        supportPanel.setGlassPane(setUpLoadAnimation());
+    }
 
-            // Field message user input
-            messageInputPanel.setBounds(0, 350, 290, 50);
-            messageInputPanel.setMargin(new Insets(6, 6, 6, 6));
-            messageInputScrollPane = new JScrollPane(messageInputPanel);
-            messageInputScrollPane.setBounds(15, 345, 555, 110);
+    public JTextPane setUpChatOverviewPanel() {
+        chatOverviewPanel.setBounds(15, 15, 665, 320);
+        chatOverviewPanel.setMargin(new Insets(6, 6, 6, 6));
+        chatOverviewPanel.setContentType("text/html");
+        chatOverviewPanel.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+        return chatOverviewPanel;
+    }
 
-            // Send button
-            sendButton.setBounds(580, 346, 105, 108);
+    public JScrollPane setUpChatOverviewScrollPane() {
+        chatOverviewScrollPane = new JScrollPane(setUpChatOverviewPanel());
+        chatOverviewScrollPane.setBounds(15, 15, 670, 320);
+        chatOverviewScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        return chatOverviewScrollPane;
+    }
 
-            messageInputPanel.addKeyListener(new KeyAdapter() {
-                // Send message on Enter
-                public void keyPressed(KeyEvent e) {
+    public JTextArea setUpMessageInputPanel(){
+        messageInputPanel.setBounds(0, 350, 290, 50);
+        messageInputPanel.setMargin(new Insets(6, 6, 6, 6));
+        return messageInputPanel;
+    }
 
-                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                        sendMessage();
-                    }
+    public JScrollPane setUpMessageInputScrollPane(JTextArea messageInputPanel){
+        messageInputScrollPane = new JScrollPane(messageInputPanel);
+        messageInputScrollPane.setBounds(15, 345, 555, 110);
+        return messageInputScrollPane;
+    }
 
-                    // Get last message typed
-                    if (e.getKeyCode() == KeyEvent.VK_UP) {
-                        String currentMessage = messageInputPanel.getText().trim();
-                        messageInputPanel.setText(oldMsg);
-                        oldMsg = currentMessage;
-                    }
-
-                    if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                        String currentMessage = messageInputPanel.getText().trim();
-                        messageInputPanel.setText(oldMsg);
-                        oldMsg = currentMessage;
-                    }
-
-                }
-            });
-
-            // Send button click action
-            sendButton.addActionListener(ae -> sendMessage());
-
-            supportPanel.add(chatOverviewScrollPane);
-            supportPanel.setVisible(true);
-
-            // Chat panel initial message
-            appendToPane(chatOverviewPanel,
-                    "<b>Welcome to " + chatTitle + ", please ask your questions!</b>", false
-            );
-
-            //TextEditor.setCodeBlock(supportPanel, chatOverviewPanel);
-
-            // Default server specifications
+    public void setUpServer() {
+        try {
             name = "User";
             String port = "12345";
             serverName = "localhost";
@@ -317,35 +302,86 @@ public class SupportGUIDark implements ChatGUI {         //TODO: Make styling dy
             server = new Socket(serverName, PORT);
             input = new BufferedReader(new InputStreamReader(server.getInputStream()));
             output = new PrintWriter(server.getOutputStream(), true);
-
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-                ex.printStackTrace();
-            }
-
-            // Create new read thread
-            read = new Read();
-            read.start();
-
-            supportPanel.add(sendButton, JLayeredPane.DEFAULT_LAYER);
-            supportPanel.add(messageInputScrollPane, JLayeredPane.DEFAULT_LAYER);
-            supportPanel.revalidate();
-            supportPanel.repaint();
-
-            loadingAnimation.setLocation(0,0);
-            loadingAnimation.setBounds(supportPanel.getBounds());
-            loadingAnimation.setPreferredSize(supportPanel.getPreferredSize());
-            loadingAnimation.setVisible(false);
-            supportPanel.setGlassPane(loadingAnimation);
-            setFonts();
-            setColors();
-            setScrollPane();
-
         }
         catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void setUpCodeBlock() {
+        //TextEditor.setCodeBlock(supportPanel, chatOverviewPanel);
+    }
+
+    public JButton setUpSendButton(){
+        sendButton = new JButton("Send");
+        sendButton.setBounds(580, 346, 105, 108);
+        sendButton.addActionListener(ae -> sendMessage());
+        return sendButton;
+    }
+
+    public JPanel setUpLoadAnimation() {
+        loadingAnimation = new BufferAnimation.AnimationPanel();
+        loadingAnimation.setLocation(0,0);
+        loadingAnimation.setBounds(supportPanel.getBounds());
+        loadingAnimation.setPreferredSize(supportPanel.getPreferredSize());
+        loadingAnimation.setVisible(false);
+        return loadingAnimation;
+    }
+
+    public void setUpKeyListeners() {
+        setUpMessageInputPanel().addKeyListener(new KeyAdapter() {
+            // Send message on Enter
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    sendMessage();
+                }
+                // Get last message typed
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    String currentMessage = messageInputPanel.getText().trim();
+                    messageInputPanel.setText(oldMsg);
+                    oldMsg = currentMessage;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    String currentMessage = messageInputPanel.getText().trim();
+                    messageInputPanel.setText(oldMsg);
+                    oldMsg = currentMessage;
+                }
+            }
+        });
+    }
+
+    public void createReadThread() {
+        read = new Read();
+        read.start();
+    }
+
+    public void startSupportGUI() {
+        setUpSupportPanel();
+        //Chat panel
+        setUpChatOverviewPanel();
+        //KeyListeners
+        setUpKeyListeners();
+        //Send button action
+        setUpSendButton();
+        //Placings to main panel
+        addToSupportPanel();
+        //Chat panel initial message
+        appendToPane(setUpChatOverviewPanel(),
+                "<b>Welcome to " + chatTitle + ", please ask your questions!</b>", false
+        );
+        //Default server specifications
+        setUpServer();
+        //Sets look and feel
+        lookAndFeel();
+        //Create new read thread
+        createReadThread();
+        //Revalidates/repaints main panel
+        supportPanel.revalidate();
+        supportPanel.repaint();
+        //Adjusts scrollbars/fonts/colors
+        setUpScrollBars(new Color(46 , 46 ,52), new Color(67 , 69 ,74));
+        setUpFonts("SansSerif", new Color(222, 221, 228), new Color(46 , 46 ,52), 14);
+        setUpColors(new Color(46 , 46 ,52), new Color(67 , 69 ,74));
     }
 
     public void sendMessage() {
