@@ -143,14 +143,14 @@ public class SupportGUIDark implements ChatGUI {  //TODO: Make styling dynamical
 
     }
 
-    public void setUpScrollBars(Color thumbColors, Color trackColors) {
+    public void setUpScrollBars(Color thumbColour, Color trackColour) {
         chatOverviewScrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
 
             @Override
             protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(thumbColors);
+                g2.setColor(thumbColour);
                 g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
                 g2.dispose();
             }
@@ -159,7 +159,7 @@ public class SupportGUIDark implements ChatGUI {  //TODO: Make styling dynamical
             protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(trackColors);
+                g2.setColor(trackColour);
                 g2.fillRoundRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height, 10, 10);
                 g2.dispose();
             }
@@ -189,7 +189,7 @@ public class SupportGUIDark implements ChatGUI {  //TODO: Make styling dynamical
             protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(thumbColors);
+                g2.setColor(thumbColour);
                 g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
                 g2.dispose();
             }
@@ -198,7 +198,7 @@ public class SupportGUIDark implements ChatGUI {  //TODO: Make styling dynamical
             protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(trackColors);
+                g2.setColor(trackColour);
                 g2.fillRoundRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height, 10, 10);
                 g2.dispose();
             }
@@ -248,15 +248,13 @@ public class SupportGUIDark implements ChatGUI {  //TODO: Make styling dynamical
         }
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    public JFrame setUpSupportPanel() {
+    public void setUpSupportPanel() {
         supportPanel = new JFrame(chatTitle);
         supportPanel.getContentPane().setLayout(null);
         supportPanel.setSize(700, 500);
         supportPanel.setResizable(false);
         supportPanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         supportPanel.setVisible(true);
-        return supportPanel;
     }
 
     public void addToSupportPanel() {

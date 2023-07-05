@@ -147,16 +147,14 @@ public class SupportGUILight implements ChatGUI {
             ex.printStackTrace();
         }
     }
-
-    @SuppressWarnings("UnusedReturnValue")
-    public JFrame setUpSupportPanel() {
+    
+    public void setUpSupportPanel() {
         supportPanel = new JFrame(chatTitle);
         supportPanel.getContentPane().setLayout(null);
         supportPanel.setSize(700, 500);
         supportPanel.setResizable(false);
         supportPanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         supportPanel.setVisible(true);
-        return supportPanel;
     }
 
     public void addToSupportPanel() {
