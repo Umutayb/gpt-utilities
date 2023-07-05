@@ -1,7 +1,5 @@
 import api_assured.exceptions.FailedCallException;
 import gpt.api.GPT;
-import gpt.chat.ui.ChatGUI;
-import gpt.chat.ui.ChatGUIFactory;
 import gpt.utilities.DataGenerator;
 import models.CollectionOfIsbnModel;
 import models.Pet;
@@ -127,14 +125,4 @@ public class AppTest {
         while (true);
     }
 
-    public static void main(String[] args) {
-        PropertyUtility.loadProperties("src/test/resources/test.properties");
-        GPT gpt = new GPT(PropertyUtility.getProperty("token"));
-        ChatGUI chat = ChatGUIFactory.getChatGUI(
-                ChatGUIFactory.Theme.light,
-                gpt
-        );
-        chat.setTemperature(Double.parseDouble(PropertyUtility.getProperty("temperature", "0.5")));
-        chat.start();
-    }
 }

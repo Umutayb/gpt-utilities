@@ -1,12 +1,9 @@
 package gpt.utilities;
 
 import api_assured.Caller;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.JsonObject;
 import gpt.api.GPT;
 import gpt.exceptions.GptUtilityException;
@@ -14,6 +11,7 @@ import gpt.models.Message;
 import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
 import lombok.Data;
+import utils.MappingUtilities;
 import utils.ReflectionUtilities;
 import utils.TextParser;
 
@@ -24,7 +22,7 @@ import java.util.*;
 public class DataGenerator {
 
     private ReflectionUtilities reflectionUtilities = new ReflectionUtilities();
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = MappingUtilities.Json.mapper;
     private List<Message> messages = new ArrayList<>();
     private TextParser parser = new TextParser();
     private ObjectWriter objectWriter;
@@ -150,11 +148,6 @@ public class DataGenerator {
     }
 
     private void prepareObjectMapper() {
-        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-        objectMapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
-        objectMapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
-        objectMapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.NONE);
-        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
     }
 }
