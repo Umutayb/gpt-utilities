@@ -27,102 +27,110 @@ public class AppTest {
     @Test
     public void dataGeneratorTest() throws InterruptedException {
         int count = 0;
+        Pet pet = null;
         do {
             try {
-                Pet pet = generator.instantiate(Pet.class, "id");
-                Assert.assertNull("The Id field is not null!", pet.getId());
+                pet = generator.instantiate(Pet.class, "id");
                 break;
             }
             catch (FailedCallException e) {
                 count++;
-                gpt.log.warning("Too many requests to process. Waiting for GPT to be stable...");
+                gpt.log.warning("Too many requests to process or token is out of credit. Waiting for GPT to be stable...");
                 Thread.sleep(15000);
                 if (count > 3)
                     break;
             }
         }
         while (true);
+        Assert.assertNull("The Id field is not null!", pet.getId());
     }
 
     @Test
     public void dataGeneratorPetTest() throws InterruptedException {
         int count = 0;
+        Pet pet = null;
         do {
             try {
-                Pet pet = generator.instantiate(Pet.class, "id");
-                Assert.assertNull("The Id field is not null!", pet.getId());
+                pet = generator.instantiate(Pet.class, "id");
                 break;
             }
             catch (FailedCallException e) {
                 count++;
-                gpt.log.warning("Too many requests to process. Waiting for GPT to be stable...");
+                gpt.log.warning("Too many requests to process or token is out of credit. Waiting for GPT to be stable...");
                 Thread.sleep(15000);
                 if (count > 3)
                     break;
             }
         }
         while (true);
+        assert pet != null;
+        Assert.assertNull("The Id field is not null!", pet.getId());
     }
 
     @Test
     public void dataGeneratorUserTest() throws InterruptedException {
         int count = 0;
+        User user = null;
         do {
             try {
-                User user = generator.instantiate(User.class);
-                Arrays.stream(user.getClass().getFields()).iterator().forEachRemaining(field -> Assert.assertNotNull(field.getName() + " field is null!", field));
+                user = generator.instantiate(User.class);
                 break;
             }
             catch (FailedCallException e) {
                 count++;
-                gpt.log.warning("Too many requests to process. Waiting for GPT to be stable...");
+                gpt.log.warning("Too many requests to process or token is out of credit. Waiting for GPT to be stable...");
                 Thread.sleep(15000);
                 if (count > 3)
                     break;
             }
         }
         while (true);
+        assert user != null;
+        Arrays.stream(user.getClass().getFields()).iterator().forEachRemaining(field -> Assert.assertNotNull(field.getName() + " field is null!", field));
     }
 
     @Test
     public void dataGeneratorIsbnTest() throws InterruptedException {
         int count = 0;
+        CollectionOfIsbnModel isbnModel = null;
         do {
             try {
-                CollectionOfIsbnModel isbnModel = generator.instantiate(CollectionOfIsbnModel.class);
-                Arrays.stream(isbnModel.getClass().getFields()).iterator().forEachRemaining(Assert::assertNotNull);
+                isbnModel = generator.instantiate(CollectionOfIsbnModel.class);
                 break;
             }
             catch (FailedCallException e) {
                 count++;
-                gpt.log.warning("Too many requests to process. Waiting for GPT to be stable...");
+                gpt.log.warning("Too many requests to process or token is out of credit. Waiting for GPT to be stable...");
                 Thread.sleep(15000);
                 if (count > 3)
                     break;
             }
         }
         while (true);
-
+        assert isbnModel != null;
+        Arrays.stream(isbnModel.getClass().getFields()).iterator().forEachRemaining(Assert::assertNotNull);
     }
 
     @Test
     public void dataGeneratorBookTest() throws InterruptedException {
         int count = 0;
+        Librarian librarian = null;
         do {
             try {
-                Librarian librarian = generator.instantiate(Librarian.class);
-                Arrays.stream(librarian.getClass().getFields()).iterator().forEachRemaining(field -> Assert.assertNotNull(field.getName() + " field is null!", field));
+                librarian = generator.instantiate(Librarian.class);
                 break;
             }
             catch (FailedCallException e) {
                 count++;
-                gpt.log.warning("Too many requests to process. Waiting for GPT to be stable...");
+                gpt.log.warning("Too many requests to process or token is out of credit. Waiting for GPT to be stable...");
                 Thread.sleep(15000);
                 if (count > 3)
                     break;
             }
         }
         while (true);
+        assert librarian != null;
+        Arrays.stream(librarian.getClass().getFields()).iterator().forEachRemaining(field -> Assert.assertNotNull(field.getName() + " field is null!", field));
     }
 
 }

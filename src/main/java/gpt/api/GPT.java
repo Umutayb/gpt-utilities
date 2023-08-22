@@ -33,7 +33,7 @@ public class GPT extends ApiUtilities {
                 Integer.parseInt(PropertyUtility.getProperty("gpt-connection-write-timeout", "120"))
         ).setReadTimeout(
                 Integer.parseInt(PropertyUtility.getProperty("gpt-connection-read-timeout", "120"))
-        ).setPrintHeaders(false).generate(GptServices.class);
+        ).printHeaders(false).generate(GptServices.class);
         Caller.keepLogs(false);
         this.token = token;
     }
