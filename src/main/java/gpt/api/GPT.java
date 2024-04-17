@@ -3,14 +3,16 @@ package gpt.api;
 import api_assured.ApiUtilities;
 import api_assured.Caller;
 import api_assured.ServiceGenerator;
+import context.ContextStore;
 import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import okhttp3.Headers;
 import retrofit2.Call;
-import utils.PropertyUtility;
 import utils.StringUtilities;
+
+import static utils.StringUtilities.highlighted;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -28,12 +30,12 @@ public class GPT extends ApiUtilities {
         gptServices = new ServiceGenerator(
                 new Headers.Builder().add("Authorization","Bearer " + token).build()
         ).setConnectionTimeout(
-                Integer.parseInt(PropertyUtility.getProperty("gpt-connection-timeout", "240"))
+                Integer.parseInt(ContextStore.get("gpt-connection-timeout", "240"))
         ).setWriteTimeout(
-                Integer.parseInt(PropertyUtility.getProperty("gpt-connection-write-timeout", "120"))
+                Integer.parseInt(ContextStore.get("gpt-connection-write-timeout", "120"))
         ).setReadTimeout(
-                Integer.parseInt(PropertyUtility.getProperty("gpt-connection-read-timeout", "120"))
-        ).printHeaders(false).generate(GptServices.class);
+                Integer.parseInt(ContextStore.get("gpt-connection-read-timeout", "120"))
+        ).printHeaders(true).setRequestLogging(true).generate(GptServices.class);
         Caller.keepLogs(false);
         this.token = token;
     }
@@ -45,8 +47,8 @@ public class GPT extends ApiUtilities {
      * @return a response model containing response and usage information
      */
     public MessageResponse sendMessage(MessageModel messageModel) {
-        if (Caller.keepsLogs()) log.info("Messaging GPT model " + strUtils.highlighted(StringUtilities.Color.BLUE, messageModel.getModel()));
+        if (Caller.keepsLogs()) log.info("Messaging GPT model " + highlighted(StringUtilities.Color.BLUE, messageModel.getModel()));
         Call<MessageResponse> messageCall = gptServices.sendMessage(messageModel);
-        return perform(messageCall, true , false);
+        return perform(messageCall, true , true);
     }
 }

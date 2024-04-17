@@ -1,5 +1,9 @@
+import api_assured.Caller;
 import api_assured.exceptions.FailedCallException;
+import context.ContextStore;
 import gpt.api.GPT;
+import gpt.chat.ui.theme.SupportGUIDark;
+import gpt.chat.ui.theme.SupportGUILight;
 import gpt.utilities.DataGenerator;
 import models.CollectionOfIsbnModel;
 import models.Pet;
@@ -8,19 +12,26 @@ import models.Librarian;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import utils.PropertyUtility;
-
 import java.util.Arrays;
 
 public class AppTest {
+
+    public static void main(String[] args) {
+        ContextStore.loadProperties("src/test/resources/test.properties");
+        GPT gpt = new GPT(ContextStore.get("token"));
+        Caller.keepLogs(false);
+        SupportGUILight gui = new SupportGUILight(gpt);
+        SupportGUIDark guiDark = new SupportGUIDark(gpt);
+        guiDark.start();
+    }
 
     static GPT gpt;
     static DataGenerator generator;
 
     @Before
     public void loadProperties(){
-        PropertyUtility.loadProperties("src/test/resources/test.properties");
-        gpt = new GPT(PropertyUtility.getProperty("token"));
+        ContextStore.loadProperties("src/test/resources/test.properties");
+        gpt = new GPT(ContextStore.get("token"));
         generator = new DataGenerator(gpt);
     }
 

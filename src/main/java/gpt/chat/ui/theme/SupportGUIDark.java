@@ -27,7 +27,6 @@ public class SupportGUIDark implements ChatGUI {  //TODO: Make styling dynamical
     public JTextPane chatOverviewPanel = new JTextPane();
     public JTextArea messageInputPanel = new JTextArea();
     public List<Message> messages = new ArrayList<>();
-    public TextParser textParser = new TextParser();
     public JScrollPane chatOverviewScrollPane;
     public JScrollPane messageInputScrollPane;
     public JPanel loadingAnimation;

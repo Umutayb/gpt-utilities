@@ -12,19 +12,17 @@ import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
 import lombok.Data;
 import utils.MappingUtilities;
-import utils.ReflectionUtilities;
-import utils.TextParser;
-
+import utils.reflection.ReflectionUtilities;
 import java.util.*;
+
+import static utils.TextParser.parse;
 
 @Data
 @SuppressWarnings("unused")
 public class DataGenerator {
 
-    private ReflectionUtilities reflectionUtilities = new ReflectionUtilities();
     private ObjectMapper objectMapper = MappingUtilities.Json.mapper;
     private List<Message> messages = new ArrayList<>();
-    private TextParser parser = new TextParser();
     private ObjectWriter objectWriter;
     private MessageModel messageModel;
     private List<String> prompts;
@@ -114,7 +112,7 @@ public class DataGenerator {
      * Generates fields of a given class.
      * This function takes a class as input and generates the fields of that class. The fields
      * are returned as an array of strings. Each string represents a field in the format "accessModifier
-     * dataType fieldName". The access modifier can be "public", "private", or "protected". The data type
+     * dataType fieldName." The access modifier can be "public", "private", or "protected". The data type
      * can be any valid data type in the language. The field name is the name of the field as defined in
      * the class.
      *
@@ -128,13 +126,13 @@ public class DataGenerator {
      */
     private <T> String generateFieldData(Class<T> clazz, String... exceptions) throws NoSuchFieldException, JsonProcessingException, ClassNotFoundException, GptUtilityException {
         gpt.log.info("Generating data for the " + clazz.getSimpleName() + " class...");
-        JsonObject json = reflectionUtilities.getJsonObject(clazz, new JsonObject(), exceptions);
+        JsonObject json = ReflectionUtilities.getJsonObject(clazz, new JsonObject(), exceptions);
         this.messages.add(new Message("user", clazz.getSimpleName() + " class JSON: " + json));
         MessageResponse messageResponse = gpt.sendMessage(
                 new MessageModel(this.modelName, this.messages, this.temperature)
         );
         String response = messageResponse.getChoices().get(0).getMessage().getContent();
-        if (!response.startsWith("{")) response = "{" + parser.parse("{", null, response);
+        if (!response.startsWith("{")) response = "{" + parse("{", null, response);
         return response;
     }
 
