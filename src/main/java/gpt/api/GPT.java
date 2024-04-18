@@ -27,6 +27,7 @@ public class GPT extends ApiUtilities {
      * @param token bearer token for gpt interaction
      */
     public GPT(String token) {
+        boolean printLogs = Boolean.parseBoolean(ContextStore.get("gpt-print-request-logs", "false"));
         gptServices = new ServiceGenerator(
                 new Headers.Builder().add("Authorization","Bearer " + token).build()
         ).setConnectionTimeout(
@@ -35,8 +36,8 @@ public class GPT extends ApiUtilities {
                 Integer.parseInt(ContextStore.get("gpt-connection-write-timeout", "120"))
         ).setReadTimeout(
                 Integer.parseInt(ContextStore.get("gpt-connection-read-timeout", "120"))
-        ).printHeaders(true).setRequestLogging(true).generate(GptServices.class);
-        Caller.keepLogs(false);
+        ).printHeaders(printLogs).setRequestLogging(printLogs).generate(GptServices.class);
+        Caller.keepLogs(printLogs);
         this.token = token;
     }
 
