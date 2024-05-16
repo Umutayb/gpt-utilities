@@ -1,13 +1,12 @@
-package gpt.models;
+package gpt.models.function;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class Message {
-    String role;
-    String content;
+@NoArgsConstructor
+public class FunctionCall {
+    String name;
 }

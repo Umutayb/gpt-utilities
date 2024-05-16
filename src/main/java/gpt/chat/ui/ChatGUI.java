@@ -1,6 +1,7 @@
 package gpt.chat.ui;
 
-import gpt.models.Message;
+import gpt.models.message.standard.MessageModel;
+
 import javax.swing.*;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface ChatGUI {
     ChatGUI setResponderName(String responderName);
     ChatGUI setChatTitle(String chatTitle);
     ChatGUI setUserName(String userName);
-    ChatGUI setMessages(List<Message> messages);
+    ChatGUI setMessages(List<MessageModel> messages);
 
     default ChatGUI start(){
         startServer();

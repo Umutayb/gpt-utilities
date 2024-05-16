@@ -1,7 +1,8 @@
-package gpt.models;
+package gpt.models.message;
 
+import gpt.models.message.standard.MessageModel;
 import lombok.Data;
-import lombok.Getter;
+
 import java.util.List;
 
 /**
@@ -54,7 +55,7 @@ public class MessageResponse {
      */
     @Data
     public static class Choices {
-        Message message;
+        MessageModel message;
         String finish_reason;
         Double index;
     }

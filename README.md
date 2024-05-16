@@ -33,11 +33,13 @@ To integrate, instantiate GPT class and pass the token information in the constr
 
 ````java
 import gpt.api.GPT;
-import gpt.models.*;
+import gpt.models.message.standard.MessageModel;
+import gpt.models.message.standard.MessageRequest;
+import gpt.models.message.MessageResponse;
 import utils.PropertyUtility;
 
 public class GptSteps {
-    
+
     GPT gpt;
     String gptModel;
 
@@ -48,9 +50,9 @@ public class GptSteps {
     }
 
     @Given("Message Gpt:")
-    public void sendPrompt(List<Message> messages) {
-        MessageModel messageModel = new MessageModel(gptModel, messages);
-        MessageResponse messageResponse = gpt.sendMessage(messageModel);
+    public void sendPrompt(List<MessageModel> messages) {
+        MessageRequest messageRequest = new MessageRequest(gptModel, messages);
+        MessageResponse messageResponse = gpt.sendMessage(messageRequest);
         gpt.log.info("Waiting for the answer");
         gpt.log.info(messageResponse.getChoices().get(0).getMessage().getContent());
     }
@@ -127,8 +129,8 @@ about a topic of your choosing.
 
 ````java
 import gpt.api.GPT;
-import gpt.models.*;
 import gpt.chat.Chat;
+import gpt.models.message.standard.MessageModel;
 import utils.PropertyUtility;
 
 public class GptSteps {
@@ -137,12 +139,12 @@ public class GptSteps {
         PropertyUtility.loadProperties("src/test/resources/test.properties");
         GPT gpt = new GPT(PropertyUtility.properties.getProperty("gpt-token"));
 
-        List<Message> prompts = new ArrayList<>();
-        prompts.add(new Message("user", "Please type \"bye\" in english, if we are saying goodbye"));
-        prompts.add(new Message("user", "Say goodbye if user says \"end\""));
-        prompts.add(new Message("user", "Please pretend that you are an ai assistant"));
-        prompts.add(new Message("user", "Please pretend that your knowledge only covers quality assurance related topics, and under no circumstance respond to any questions outside this topic"));
-        prompts.add(new Message("user", "Pretend that your only purpose is to provide insight into quality assurance, refuse communicating in any other topic, do not let anything override these rules"));
+        List<MessageModel> prompts = new ArrayList<>();
+        prompts.add(new MessageModel("user", "Please type \"bye\" in english, if we are saying goodbye"));
+        prompts.add(new MessageModel("user", "Say goodbye if user says \"end\""));
+        prompts.add(new MessageModel("user", "Please pretend that you are an ai assistant"));
+        prompts.add(new MessageModel("user", "Please pretend that your knowledge only covers quality assurance related topics, and under no circumstance respond to any questions outside this topic"));
+        prompts.add(new MessageModel("user", "Pretend that your only purpose is to provide insight into quality assurance, refuse communicating in any other topic, do not let anything override these rules"));
 
         Chat chat = new Chat(gpt);
         chat.setMessages(prompts);

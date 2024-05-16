@@ -5,11 +5,11 @@ import gpt.api.GPT;
 import gpt.chat.server.Server;
 import gpt.chat.ui.BufferAnimation;
 import gpt.chat.ui.ChatGUI;
-import gpt.models.Message;
-import gpt.models.MessageModel;
-import gpt.models.MessageResponse;
+import gpt.models.message.standard.MessageModel;
+import gpt.models.message.standard.MessageRequest;
+import gpt.models.message.MessageResponse;
 import lombok.Data;
-import utils.TextParser;
+
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.text.html.HTMLDocument;
@@ -26,7 +26,7 @@ import java.util.List;
 public class SupportGUIDark implements ChatGUI {  //TODO: Make styling dynamically read from a json
     public JTextPane chatOverviewPanel = new JTextPane();
     public JTextArea messageInputPanel = new JTextArea();
-    public List<Message> messages = new ArrayList<>();
+    public List<MessageModel> messages = new ArrayList<>();
     public JScrollPane chatOverviewScrollPane;
     public JScrollPane messageInputScrollPane;
     public JPanel loadingAnimation;
@@ -81,7 +81,7 @@ public class SupportGUIDark implements ChatGUI {  //TODO: Make styling dynamical
         return this;
     }
 
-    public SupportGUIDark setMessages(List<Message> messages){
+    public SupportGUIDark setMessages(List<MessageModel> messages){
         this.messages = messages;
         return this;
     }
@@ -116,7 +116,7 @@ public class SupportGUIDark implements ChatGUI {  //TODO: Make styling dynamical
         this.userName = userName;
 
         Caller.keepLogs(false);
-        for (String prompt:prompts) messages.add(new Message("system", prompt));
+        for (String prompt:prompts) messages.add(new MessageModel("system", prompt));
     }
 
     public void setUpColors(Color primary, Color secondary) {
@@ -386,11 +386,11 @@ public class SupportGUIDark implements ChatGUI {  //TODO: Make styling dynamical
     public void sendMessage() {
         try {
             String message = messageInputPanel.getText().trim();
-            if (message.equals("")) return;
+            if (message.isEmpty()) return;
             oldMsg = message;
             output.println("<b><span style='color:#c86730'>" + userName + ": </span></b>" + message); //HexCode
 
-            messages.add(new Message("user", message));
+            messages.add(new MessageModel("user", message));
             messageInputPanel.requestFocus();
             messageInputPanel.setText(null);
 
@@ -432,12 +432,12 @@ public class SupportGUIDark implements ChatGUI {  //TODO: Make styling dynamical
         try {
             MessageResponse messageResponse;
             if (messages.size()!=0)
-                messageResponse = gpt.sendMessage(new MessageModel(modelName, messages, temperature));
+                messageResponse = gpt.sendMessage(new MessageRequest(modelName, messages, temperature));
             else
                 messageResponse = gpt.sendMessage(
-                        new MessageModel(
+                        new MessageRequest(
                                 modelName,
-                                List.of(new Message("user", "Hello!")),
+                                List.of(new MessageModel("user", "Hello!")),
                                 temperature
                         )
                 );

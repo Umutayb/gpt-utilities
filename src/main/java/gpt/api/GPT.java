@@ -4,8 +4,11 @@ import api_assured.ApiUtilities;
 import api_assured.Caller;
 import api_assured.ServiceGenerator;
 import context.ContextStore;
-import gpt.models.MessageModel;
-import gpt.models.MessageResponse;
+import gpt.models.message.BaseMessageRequest;
+import gpt.models.message.MessageModel;
+import gpt.models.message.standard.MessageRequest;
+import gpt.models.message.MessageResponse;
+import gpt.models.message.multicontent.MultiMessageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import okhttp3.Headers;
@@ -20,6 +23,7 @@ public class GPT extends ApiUtilities {
 
     GptServices gptServices;
     String token;
+    boolean printLogs;
 
     /**
      * Instantiate GPT with a given bearer token
@@ -27,7 +31,7 @@ public class GPT extends ApiUtilities {
      * @param token bearer token for gpt interaction
      */
     public GPT(String token) {
-        boolean printLogs = Boolean.parseBoolean(ContextStore.get("gpt-print-request-logs", "false"));
+        printLogs = Boolean.parseBoolean(ContextStore.get("gpt-print-request-logs", "false"));
         gptServices = new ServiceGenerator(
                 new Headers.Builder().add("Authorization","Bearer " + token).build()
         ).setConnectionTimeout(
@@ -42,14 +46,14 @@ public class GPT extends ApiUtilities {
     }
 
     /**
-     * Sends message to ChatGPT
+     * Sends a message to ChatGPT
      *
-     * @param messageModel containing model name, messages and temperature information (creativity score)
+     * @param messageRequest containing model name, messages and temperature information (creativity score)
      * @return a response model containing response and usage information
      */
-    public MessageResponse sendMessage(MessageModel messageModel) {
-        if (Caller.keepsLogs()) log.info("Messaging GPT model " + highlighted(StringUtilities.Color.BLUE, messageModel.getModel()));
-        Call<MessageResponse> messageCall = gptServices.sendMessage(messageModel);
-        return perform(messageCall, true , true);
+    public <MessageType> MessageResponse sendMessage(BaseMessageRequest<MessageType> messageRequest) {
+        if (Caller.keepsLogs()) log.info("Messaging GPT model " + highlighted(StringUtilities.Color.BLUE, messageRequest.getModel()));
+        Call<MessageResponse> messageCall = gptServices.sendMessage(messageRequest);
+        return perform(messageCall, true , printLogs);
     }
 }

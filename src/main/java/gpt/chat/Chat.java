@@ -3,9 +3,9 @@ package gpt.chat;
 import api_assured.Caller;
 import api_assured.exceptions.FailedCallException;
 import gpt.api.GPT;
-import gpt.models.Message;
-import gpt.models.MessageModel;
-import gpt.models.MessageResponse;
+import gpt.models.message.MessageModel;
+import gpt.models.message.MessageResponse;
+import gpt.models.message.standard.MessageRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.util.ArrayList;
@@ -18,8 +18,8 @@ import java.util.Scanner;
 public class Chat {
 
     private List<String> prompts;
-    private List<Message> messages = new ArrayList<>();
-    private MessageModel messageModel;
+    private List<MessageModel> messages = new ArrayList<>();
+    private MessageRequest messageRequest;
     private String modelName;
     private Double temperature;
     private GPT gpt;
@@ -31,7 +31,7 @@ public class Chat {
         this.temperature = 0.5;
 
         Caller.keepLogs(true);
-        for (String prompt:prompts) messages.add(new Message("user", prompt));
+        for (String prompt:prompts) messages.add(new MessageModel("user", prompt));
         this.prompts = new ArrayList<>(); //Flushing prompts after adding them to messages, preventing duplicate prompts
     }
 
@@ -67,18 +67,18 @@ public class Chat {
         int conversationLimit = 100;
         boolean retainChat = true;
         do {
-            if (prompts != null && prompts.size() > 0 ) for (String prompt:prompts) messages.add(new Message("user", prompt));
+            if (prompts != null && prompts.size() > 0 ) for (String prompt:prompts) messages.add(new MessageModel("user", prompt));
             if (conversationCounter == 0) gpt.log.info("Enter your message (press Enter on an empty line to finish):");
             else  gpt.log.info("Your answer: ");
             StringBuilder prompt = new StringBuilder();
             String input;
             while (scanner.hasNextLine() && !(input = scanner.nextLine()).isEmpty()) prompt.append(input).append("\n");
-            messages.add(new Message("user", prompt.toString()));
+            messages.add(new MessageModel("user", prompt.toString()));
             gpt.log.info("Waiting for GPT...");
             try {
-                MessageResponse messageResponse = gpt.sendMessage(new MessageModel(modelName, messages, temperature));
-                Message message = messageResponse.getChoices().get(0).getMessage();
-                messages.add(new Message(message.getRole(), message.getContent()));
+                MessageResponse messageResponse = gpt.sendMessage(new MessageRequest(modelName, messages, temperature));
+                MessageModel message = messageResponse.getChoices().get(0).getMessage();
+                messages.add(new MessageModel(message.getRole(), message.getContent()));
                 gpt.log.info(messageResponse.getChoices().get(0).getMessage().getContent());
                 if (messageResponse.getChoices().get(0).getMessage().getContent().contains("bye")) break;
             }
@@ -104,20 +104,20 @@ public class Chat {
     public void evaluateTopic(String topic){
         GPT responder = new GPT(gpt.getToken());
         gpt.log.info("Evaluating " + topic + " topic...");
-        List<Message> messages = new ArrayList<>();
-        List<Message> responses = new ArrayList<>();
+        List<MessageModel> messages = new ArrayList<>();
+        List<MessageModel> responses = new ArrayList<>();
         String modelName = "gpt-3.5-turbo";
         double temperature = 0.5;
         String initialPrompt = "Lets talk about " + topic;
-        messages.add(new Message("user", initialPrompt));
+        messages.add(new MessageModel("user", initialPrompt));
         do {
-            String prompt = gpt.sendMessage(new MessageModel(modelName, messages, temperature)).getChoices().get(0).getMessage().getContent();
-            messages.add(new Message("assistant", prompt));
-            responses.add(new Message("user", prompt));
+            String prompt = gpt.sendMessage(new MessageRequest(modelName, messages, temperature)).getChoices().get(0).getMessage().getContent();
+            messages.add(new MessageModel("assistant", prompt));
+            responses.add(new MessageModel("user", prompt));
             gpt.log.info("Initiator: " + prompt);
-            String response = responder.sendMessage(new MessageModel(modelName, responses, temperature)).getChoices().get(0).getMessage().getContent();
-            messages.add(new Message("user", response));
-            responses.add(new Message("assistant", response));
+            String response = responder.sendMessage(new MessageRequest(modelName, responses, temperature)).getChoices().get(0).getMessage().getContent();
+            messages.add(new MessageModel("user", response));
+            responses.add(new MessageModel("assistant", response));
             responder.log.info("Responder: " + response);
             if (response.contains("bye") || prompt.contains("bye") || response.contains("Have a great day") || prompt.contains("Have a great day") ) break;
         }

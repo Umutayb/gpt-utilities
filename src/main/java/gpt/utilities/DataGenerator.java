@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.gson.JsonObject;
 import gpt.api.GPT;
 import gpt.exceptions.GptUtilityException;
-import gpt.models.Message;
-import gpt.models.MessageModel;
-import gpt.models.MessageResponse;
+import gpt.models.message.standard.MessageModel;
+import gpt.models.message.standard.MessageRequest;
+import gpt.models.message.MessageResponse;
 import lombok.Data;
 import utils.MappingUtilities;
 import utils.reflection.ReflectionUtilities;
@@ -22,9 +22,9 @@ import static utils.TextParser.parse;
 public class DataGenerator {
 
     private ObjectMapper objectMapper = MappingUtilities.Json.mapper;
-    private List<Message> messages = new ArrayList<>();
+    private List<MessageModel> messages = new ArrayList<>();
     private ObjectWriter objectWriter;
-    private MessageModel messageModel;
+    private MessageRequest messageRequest;
     private List<String> prompts;
     private boolean printResult;
     private Double temperature;
@@ -46,7 +46,7 @@ public class DataGenerator {
 
         prepareObjectMapper();
 
-        messages.add(new Message("user",
+        messages.add(new MessageModel("user",
                 "Please recreate the following json with randomised, creative and unique values that are meaningful with respect to the field names. "  +
                 "Do not skip any field"  +
                 "While generating values, always prioritise given value types over value names"  +
@@ -64,7 +64,7 @@ public class DataGenerator {
      * @param printResult Whether to print the generated data to the console.
      * @param messages The list of messages to use for data generation.
      */
-    public DataGenerator(GPT gpt, String modelName, double temperature, boolean printResult, List<Message> messages) {
+    public DataGenerator(GPT gpt, String modelName, double temperature, boolean printResult, List<MessageModel> messages) {
         this.gpt = gpt;
         this.modelName = modelName;
         this.temperature = temperature;
@@ -127,9 +127,9 @@ public class DataGenerator {
     private <T> String generateFieldData(Class<T> clazz, String... exceptions) throws NoSuchFieldException, JsonProcessingException, ClassNotFoundException, GptUtilityException {
         gpt.log.info("Generating data for the " + clazz.getSimpleName() + " class...");
         JsonObject json = ReflectionUtilities.getJsonObject(clazz, new JsonObject(), exceptions);
-        this.messages.add(new Message("user", clazz.getSimpleName() + " class JSON: " + json));
+        this.messages.add(new MessageModel("user", clazz.getSimpleName() + " class JSON: " + json));
         MessageResponse messageResponse = gpt.sendMessage(
-                new MessageModel(this.modelName, this.messages, this.temperature)
+                new MessageRequest(this.modelName, this.messages, this.temperature)
         );
         String response = messageResponse.getChoices().get(0).getMessage().getContent();
         if (!response.startsWith("{")) response = "{" + parse("{", null, response);

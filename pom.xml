@@ -6,7 +6,7 @@
 
   <groupId>io.github.umutayb</groupId>
   <artifactId>gpt-utilities</artifactId>
-  <version>0.1.6</version>
+  <version>0.1.7-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>GPT Utilities</name>
@@ -42,7 +42,7 @@
     <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.version>3.8.0</maven.compiler.version>
-    <java.utilities.version>1.6.3</java.utilities.version>
+    <java.utilities.version>1.6.5-SNAPSHOT</java.utilities.version>
     <lombok.version>1.18.26</lombok.version>
     <retrofit.version>2.9.0</retrofit.version>
     <jackson.version>2.14.2</jackson.version>

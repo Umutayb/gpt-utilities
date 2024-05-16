@@ -4,6 +4,11 @@ import context.ContextStore;
 import gpt.api.GPT;
 import gpt.chat.ui.theme.SupportGUIDark;
 import gpt.chat.ui.theme.SupportGUILight;
+import gpt.enums.ContentType;
+import gpt.models.content.Content;
+import gpt.models.message.MessageResponse;
+import gpt.models.message.multicontent.MultiContentMessageModel;
+import gpt.models.message.multicontent.MultiMessageRequest;
 import gpt.utilities.DataGenerator;
 import models.CollectionOfIsbnModel;
 import models.Pet;
@@ -12,7 +17,10 @@ import models.Librarian;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import utils.FileUtilities;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 public class AppTest {
 
@@ -144,4 +152,22 @@ public class AppTest {
         Arrays.stream(librarian.getClass().getFields()).iterator().forEachRemaining(field -> Assert.assertNotNull(field.getName() + " field is null!", field));
     }
 
+    @Test
+    public void imageRecognitionTest() throws InterruptedException, IOException {
+        Content textContent = new Content(ContentType.text, "Write a test case for the following window.");
+        Content imageContent = new Content(ContentType.image_url, FileUtilities.getEncodedString("src/test/resources/file/LightMode.png"));
+
+        MultiContentMessageModel message = new MultiContentMessageModel("user", textContent, imageContent);
+
+        MultiMessageRequest messageModel = new MultiMessageRequest("gpt-4o", List.of(message));
+        MessageResponse response = gpt.sendMessage(messageModel);
+        gpt.log.info(response.getChoices().get(0).getMessage().getContent());
+        Assert.assertTrue("The response does not contain the keyword 'Chat'", response.getChoices().get(0).getMessage().getContent().contains("Chat"));
+        gpt.log.success("'imageRecognitionTest()' test pass!");
+    }
+
+    @Test
+    public void openAIFunctionsTest(){
+
+    }
 }

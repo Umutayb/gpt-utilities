@@ -5,9 +5,9 @@ import gpt.api.GPT;
 import gpt.chat.ui.BufferAnimation;
 import gpt.chat.ui.ChatGUI;
 import gpt.chat.server.Server;
-import gpt.models.Message;
-import gpt.models.MessageModel;
-import gpt.models.MessageResponse;
+import gpt.models.message.standard.MessageModel;
+import gpt.models.message.standard.MessageRequest;
+import gpt.models.message.MessageResponse;
 import lombok.Data;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -31,7 +31,7 @@ import java.util.List;
 public class SupportGUILight implements ChatGUI {
     public JTextPane chatOverviewPanel = new JTextPane();
     public JTextArea messageInputPanel = new JTextArea();
-    public List<Message> messages = new ArrayList<>();
+    public List<MessageModel> messages = new ArrayList<>();
     public TextParser textParser = new TextParser();
     public JScrollPane chatOverviewScrollPane;
     public JScrollPane messageInputScrollPane;
@@ -87,7 +87,7 @@ public class SupportGUILight implements ChatGUI {
         return this;
     }
 
-    public SupportGUILight setMessages(List<Message> messages){
+    public SupportGUILight setMessages(List<MessageModel> messages){
         this.messages = messages;
         return this;
     }
@@ -122,7 +122,7 @@ public class SupportGUILight implements ChatGUI {
         this.userName = userName;
 
         Caller.keepLogs(false);
-        for (String prompt:prompts) messages.add(new Message("system", prompt));
+        for (String prompt:prompts) messages.add(new MessageModel("system", prompt));
     }
 
     public void setUpFont(String fontFamily, int fontSize) {
@@ -289,7 +289,7 @@ public class SupportGUILight implements ChatGUI {
             oldMsg = message;
             output.println("<b><span style='color:#c86730'>" + userName + ": </span></b>" + message);
 
-            messages.add(new Message("user", message));
+            messages.add(new MessageModel("user", message));
             messageInputPanel.requestFocus();
             messageInputPanel.setText(null);
 
@@ -331,12 +331,12 @@ public class SupportGUILight implements ChatGUI {
         try {
             MessageResponse messageResponse;
             if (messages.size()!=0)
-                messageResponse = gpt.sendMessage(new MessageModel(modelName, messages, temperature));
+                messageResponse = gpt.sendMessage(new MessageRequest(modelName, messages, temperature));
             else
                 messageResponse = gpt.sendMessage(
-                        new MessageModel(
+                        new MessageRequest(
                                 modelName,
-                                List.of(new Message("user", "Hello!")),
+                                List.of(new MessageModel("user", "Hello!")),
                                 temperature
                         )
                 );
